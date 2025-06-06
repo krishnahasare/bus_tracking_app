@@ -12,9 +12,9 @@ app.use(cors()); // Enable CORS for all origins (adjust if needed)
 app.use(express.json()); // To parse JSON request bodies
 
 // MongoDB connection string — replace with your ow nURI
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URL = process.env.MONGO_URL;
 
-mongoose.connect(MONGO_URI, {
+mongoose.connect(MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
