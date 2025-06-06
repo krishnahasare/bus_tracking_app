@@ -5,6 +5,8 @@ import attendanceRoutes from './routes/attendance.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 const app = express();
+import dotenv from 'dotenv';
+dotenv.config();
 
 
 // Middleware
@@ -12,7 +14,9 @@ app.use(cors()); // Enable CORS for all origins (adjust if needed)
 app.use(express.json()); // To parse JSON request bodies
 
 // MongoDB connection string — replace with your ow nURI
-const MONGO_URL = process.env.MONGO_URL;
+
+const MONGO_URL = process.env.MONGO_URL ;
+;
 
 mongoose.connect(MONGO_URL, {
   useNewUrlParser: true,
