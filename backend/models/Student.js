@@ -1,11 +1,10 @@
 import mongoose from 'mongoose';
 
 const studentSchema = new mongoose.Schema({
-  // your schema here
   name: String,
-  rfidUid: String,
   studentId: String,
-  // ...
+  rfidUid: String,
 });
 
-module.exports = mongoose.model('Student', studentSchema);
+const Student = mongoose.model('Student', studentSchema);
+export default Student;
