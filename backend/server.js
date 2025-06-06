@@ -2,8 +2,10 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import attendanceRoutes from './routes/attendance.js';
-
+import path from 'path';
+import { fileURLToPath } from 'url';
 const app = express();
+
 
 // Middleware
 app.use(cors()); // Enable CORS for all origins (adjust if needed)
@@ -26,13 +28,20 @@ mongoose.connect(MONGO_URI, {
 // Routes
 app.use('/api/attendance', attendanceRoutes);
 
-// Root route (optional)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const frontendPath = path.join(__dirname, '../frontend/dist');
+app.use(express.static(frontendPath));
+
+
 app.get('/', (req, res) => {
-  res.send('Bus Tracker Backend is running');
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
+
 
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
+  console.log(`Server started on port ${PORT} - http://localhost:${PORT}`);
 });

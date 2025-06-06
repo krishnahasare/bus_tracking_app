@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const studentSchema = new mongoose.Schema({
   name: String,
@@ -6,4 +6,4 @@ const studentSchema = new mongoose.Schema({
   rfidUid: { type: String, unique: true },
 });
 
-module.exports = mongoose.model('Student', studentSchema);
+export default mongoose.model('Student', studentSchema);
