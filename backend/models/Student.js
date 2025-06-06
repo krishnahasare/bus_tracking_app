@@ -6,5 +6,8 @@ const studentSchema = new mongoose.Schema({
   rfidUid: String,
 });
 
+
 const Student = mongoose.model('Student', studentSchema);
 export default Student;
+
+
