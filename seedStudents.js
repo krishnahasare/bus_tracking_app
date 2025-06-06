@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import Student from './backend/models/Student.js';  // <-- updated path
 
-const MONGO_URI = 'mongodb://localhost:27017/bus-tracker';
 
 const students = [
   { name: 'John Doe', studentId: 'S001', rfidUid: 'A1B2C3D4' },
