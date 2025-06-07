@@ -1,21 +1,31 @@
+// routes/attendance.js
 import express from 'express';
 import Attendance from '../models/Attendance.js';
 import Student from '../models/Student.js';
 
 const router = express.Router();
 
-// Route to log attendance (check-in/check-out)
+// Route to log attendance (Check In / Check Out)
 router.post('/log', async (req, res) => {
   try {
-    const { rfidUid, status } = req.body; // status: "Check In" or "Check Out"
-    if (!rfidUid || !status) {
-      return res.status(400).json({ message: 'rfidUid and status are required' });
+    const { uid, student_id, name, status } = req.body;
+
+    // Validate required fields
+    if (!uid || !student_id || !name || !status) {
+      return res.status(400).json({ message: 'uid, student_id, name, and status are required' });
     }
 
     // Find student by RFID UID
-    const student = await Student.findOne({ rfidUid });
+    let student = await Student.findOne({ rfidUid: uid.trim() });
+
+    // If not found, create student record
     if (!student) {
-      return res.status(404).json({ message: 'Student not found for given RFID UID' });
+      student = new Student({
+        studentId: student_id.trim(),
+        name: name.trim(),
+        rfidUid: uid.trim(),
+      });
+      await student.save();
     }
 
     // Create attendance log
@@ -37,11 +47,9 @@ router.post('/log', async (req, res) => {
 // Route to get all attendance logs for admin dashboard
 router.get('/logs', async (req, res) => {
   try {
-    // Get all logs, newest first, with student details populated
     const logs = await Attendance.find()
-  .populate('studentId') // This populates the full student document instead of just ID
-  .sort({ timestamp: -1 });
-
+      .populate('studentId') // This populates full student details
+      .sort({ timestamp: -1 });
 
     res.json(logs);
   } catch (error) {
@@ -50,34 +58,32 @@ router.get('/logs', async (req, res) => {
   }
 });
 
-// Route to get attendance logs by RFID UID (for individual student)
+// Route to get attendance logs by RFID UID
 router.get('/student/:rfidUid', async (req, res) => {
   try {
     const { rfidUid } = req.params;
 
-    // Find student by RFID UID
     const student = await Student.findOne({ rfidUid });
     if (!student) {
       return res.status(404).json({ message: 'Student not found' });
     }
 
-    // Find all attendance logs for this student
     const logs = await Attendance.find({ studentId: student._id }).sort({ timestamp: -1 });
 
     res.json({ student, logs });
   } catch (error) {
-    console.error('Error fetching student attendance logs:', error);
-    res.status(500).json({ message: 'Server error fetching student attendance logs' });
+    console.error('Error fetching student logs:', error);
+    res.status(500).json({ message: 'Server error fetching student logs' });
   }
 });
 
-// TEMPORARY: Clear all attendance logs
+// TEMP: Route to clear all attendance logs
 router.delete('/clear', async (req, res) => {
   try {
     await Attendance.deleteMany({});
     res.json({ message: 'All attendance logs cleared' });
   } catch (error) {
-    console.error('Error clearing attendance logs:', error);
+    console.error('Error clearing logs:', error);
     res.status(500).json({ message: 'Failed to clear logs' });
   }
 });

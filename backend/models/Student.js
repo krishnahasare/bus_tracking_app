@@ -1,13 +1,24 @@
+// models/Student.js
 import mongoose from 'mongoose';
 
 const studentSchema = new mongoose.Schema({
-  name: String,
-  studentId: String,
-  rfidUid: String,
+  studentId: {
+    type: String,
+    required: true,
+    unique: true, // Prevent duplicate student IDs
+    trim: true
+  },
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  rfidUid: {
+    type: String,
+    required: true,
+    unique: true, // Prevent duplicate RFID cards
+    trim: true
+  }
 });
 
-
-const Student = mongoose.model('Student', studentSchema);
-export default Student;
-
-
+export default mongoose.models.Student || mongoose.model('Student', studentSchema);
