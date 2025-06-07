@@ -8,7 +8,8 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/attendance/logs');
+        // ✅ Changed to relative path (works locally & on Render)
+        const res = await axios.get('/api/attendance/logs');
         setLogs(res.data);
       } catch (err) {
         console.error('Error fetching attendance logs:', err);
@@ -16,6 +17,7 @@ const AdminDashboard = () => {
         setLoading(false);
       }
     };
+
     fetchLogs();
   }, []);
 

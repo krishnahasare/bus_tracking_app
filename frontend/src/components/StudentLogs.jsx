@@ -6,10 +6,27 @@ const StudentLogs = () => {
   const [studentLogs, setStudentLogs] = useState(null);
   const [error, setError] = useState('');
 
+  const handleLogAttendance = async () => {
+  setError('');
+  try {
+    await axios.post('https://bus-tracking-app-wt0f.onrender.com/api/attendance/log', {
+      rfidUid: rfid,
+      status: 'Check In', // or make this dynamic if needed
+    });
+    alert('✅ Attendance logged!');
+    handleSearch(); // refresh logs after logging attendance
+  } catch (err) {
+    alert('❌ Log failed: ' + (err.response?.data?.message || err.message));
+  }
+};
+
+
   const handleSearch = async () => {
     setError('');
     try {
-      const res = await axios.get(`http://localhost:5000/api/attendance/student/${rfid}`);
+      const res = await axios.get(`https://bus-tracking-app-wt0f.onrender.com/api/attendance/student/${rfid}`);
+
+
       setStudentLogs(res.data);
     } catch (err) {
       setStudentLogs(null);
@@ -33,6 +50,13 @@ const StudentLogs = () => {
       >
         Search
       </button>
+
+      <button
+  onClick={handleLogAttendance}    // <=== this is important
+  className="bg-green-600 text-white px-4 py-2 rounded"
+>
+  Log Attendance
+</button>
 
       {error && <p className="text-red-500 mt-4">{error}</p>}
 
