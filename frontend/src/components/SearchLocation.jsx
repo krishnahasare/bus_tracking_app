@@ -25,7 +25,7 @@ export default function SearchLocation() {
 
   const fetchLocations = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/buslocation'); // corrected URL with /api prefix
+      const res = await axios.get('https://bus-tracking-app-wt0f.onrender.com/api/buslocation'); // corrected URL with /api prefix
       setAllLocations(res.data);
     } catch (error) {
       console.error('Error fetching locations:', error);
@@ -47,7 +47,7 @@ export default function SearchLocation() {
 
     // Save new location to backend
     try {
-      await axios.post('http://localhost:5000/searchlocation', { latitude: lat, longitude: lng }); // corrected URL with /api prefix
+      await axios.post('https://bus-tracking-app-wt0f.onrender.com/searchlocation', { latitude: lat, longitude: lng }); // corrected URL with /api prefix
       fetchLocations(); // Refresh list after adding
       setLatitude('');
       setLongitude('');
