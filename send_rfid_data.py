@@ -1,30 +1,29 @@
 import requests
+import json
 
-# Example RFID UID from your RFID module
-data = "[65, 66, 49, 66, 50, 67, 51, 68, 52]"  # Simulated: this represents "AB1B2C3D4"
-status = "Check In"  # Or "Check Out", based on context
+# Example received data (simulate actual RFID scan payload)
+data = '{"uid":"95E1AE02","student_id":"2023025089","name":"Shreyash Mane"}'
+status = "Check In"  # Or "Check Out"
 
-# Step 1: Clean and convert array of ASCII codes to RFID string
-if data.startswith("[") and data.endswith("]"):
-    data = data[1:-1]  # Remove brackets
-    data_list = list(map(int, data.split(", ")))  # Convert to list of integers
-    rfidUid = ''.join([chr(x) for x in data_list])  # Convert ASCII to characters
+try:
+    parsed_data = json.loads(data)
 
-    print("RFID UID:", rfidUid)
-
-    # Step 2: Prepare the payload to send to backend
+    # Construct the correct payload
     payload = {
-        "rfidUid": rfidUid,
+        "uid": parsed_data["uid"].strip(),
+        "student_id": parsed_data["student_id"].strip(),
+        "name": parsed_data["name"].strip(),
         "status": status
     }
 
-    # Step 3: POST to your backend
+    # POST to backend
     url = "http://localhost:5000/api/attendance/log"
-# Replace with actual IP
+    response = requests.post(url, json=payload)
 
-    try:
-        response = requests.post(url, json=payload)
-        print("✅ Sent to server. Response:", response.status_code)
-        print("Server says:", response.json())
-    except Exception as e:
-        print("❌ Error sending data:", e)
+    print("✅ Sent to server. Response:", response.status_code)
+    print("Server:", response.json())
+
+except json.JSONDecodeError as e:
+    print("❌ JSON error:", e)
+except Exception as e:
+    print("❌ Sending failed:", e)

@@ -57,7 +57,7 @@ const StudentLogs = () => {
 >
   Log Attendance
 </button>
-<br></br>
+
    <button
         onClick={() => navigate('/search')}
         className="bg-purple-600 text-white px-4 py-2 mt-4 rounded"
