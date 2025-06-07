@@ -47,7 +47,7 @@ export default function SearchLocation() {
 
     // Save new location to backend
     try {
-      await axios.post('http://localhost:5000/api/buslocation', { latitude: lat, longitude: lng }); // corrected URL with /api prefix
+      await axios.post('http://localhost:5000/searchlocation', { latitude: lat, longitude: lng }); // corrected URL with /api prefix
       fetchLocations(); // Refresh list after adding
       setLatitude('');
       setLongitude('');
