@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 const app = express();
 import dotenv from 'dotenv';
 dotenv.config();
-
+import busLocationRoutes from './routes/buslocation.js';
 
 // Middleware
 app.use(cors()); // Enable CORS for all origins (adjust if needed)
@@ -31,6 +31,7 @@ mongoose.connect(MONGO_URL, {
 
 // Routes
 app.use('/api/attendance', attendanceRoutes);
+app.use('/', busLocationRoutes);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
