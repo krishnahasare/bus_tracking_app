@@ -8,104 +8,78 @@ const containerStyle = {
 };
 
 const defaultCenter = {
-  lat: 19.0760, // Mumbai default
+  lat: 19.0760,
   lng: 72.8777,
 };
 
 export default function SearchLocation() {
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
   const [markerPosition, setMarkerPosition] = useState(null);
   const [allLocations, setAllLocations] = useState([]);
+  const [googleInstance, setGoogleInstance] = useState(null);
 
-  // Fetch all locations on component mount
+
+  // Fetch latest location every 5 seconds
   useEffect(() => {
-    fetchLocations();
+    const intervalId = setInterval(fetchLatestLocation, 1000);
+    fetchLatestLocation(); // initial load
+
+    return () => clearInterval(intervalId); // cleanup
   }, []);
 
-  const fetchLocations = async () => {
+  const fetchLatestLocation = async () => {
     try {
-      const res = await axios.get('https://bus-tracking-app-wt0f.onrender.com/api/buslocation'); // corrected URL with /api prefix
-      setAllLocations(res.data);
+      const res = await axios.get('https://bus-tracking-app-wt0f.onrender.com/api/buslocation');
+      const locations = res.data;
+
+      if (locations.length > 0) {
+        const latest = locations[locations.length - 1];
+        setMarkerPosition({ lat: latest.latitude, lng: latest.longitude });
+        setAllLocations(locations);
+      }
     } catch (error) {
       console.error('Error fetching locations:', error);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const lat = parseFloat(latitude);
-    const lng = parseFloat(longitude);
-
-    if (isNaN(lat) || isNaN(lng)) {
-      alert('Please enter valid numbers for latitude and longitude.');
-      return;
-    }
-
-    setMarkerPosition({ lat, lng });
-
-    // Save new location to backend
-    try {
-      await axios.post('https://bus-tracking-app-wt0f.onrender.com/searchlocation', { latitude: lat, longitude: lng }); // corrected URL with /api prefix
-      fetchLocations(); // Refresh list after adding
-      setLatitude('');
-      setLongitude('');
-    } catch (error) {
-      console.error('Error saving location:', error);
-      alert('Failed to save location. Check console.');
-    }
-  };
-
   return (
     <div className="p-6 max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Search Bus Location by Coordinates</h2>
+      <h2 className="text-2xl font-bold mb-4">Live Bus Tracker</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          placeholder="Latitude"
-          value={latitude}
-          onChange={(e) => setLatitude(e.target.value)}
-          className="border p-2 w-full"
-        />
-        <input
-          type="text"
-          placeholder="Longitude"
-          value={longitude}
-          onChange={(e) => setLongitude(e.target.value)}
-          className="border p-2 w-full"
-        />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          Show on Map & Save
-        </button>
-      </form>
+      <div className="mt-6 mb-6">
+       <LoadScript
+  googleMapsApiKey="AIzaSyDjWXHa4cpYsQk01UBQUi6WtLtaZRRm1RI"
+  onLoad={() => setGoogleInstance(window.google)}
+>
 
-      <div className="mt-6">
-        <LoadScript googleMapsApiKey={"AIzaSyDjWXHa4cpYsQk01UBQUi6WtLtaZRRm1RI"}>
           <GoogleMap
             mapContainerStyle={containerStyle}
             center={markerPosition || defaultCenter}
-            zoom={12}
+            zoom={15}
           >
-            {markerPosition && <Marker position={markerPosition} />}
+      {markerPosition && googleInstance && (
+  <Marker
+    position={markerPosition}
+    icon={{
+      url: 'http://maps.google.com/mapfiles/kml/shapes/bus.png', // ✅ This works reliably
+      scaledSize: new googleInstance.maps.Size(40, 40),
+    }}
+  />
+)}
+
           </GoogleMap>
         </LoadScript>
       </div>
 
-      {/* Show all locations below the map */}
-      <div className="mt-6">
-        <h3 className="text-xl font-semibold mb-2">All Saved Bus Locations:</h3>
+      {/* Display location logs */}
+      <div>
+        <h3 className="text-xl font-semibold mb-2">All Bus Locations:</h3>
         {allLocations.length === 0 ? (
-          <p>No locations saved yet.</p>
+          <p>No data yet.</p>
         ) : (
           <ul className="list-disc list-inside max-h-64 overflow-auto border p-4 rounded bg-gray-50">
             {allLocations.map((loc) => (
               <li key={loc._id}>
-                Latitude: {loc.latitude}, Longitude: {loc.longitude}
+                Lat: {loc.latitude}, Lng: {loc.longitude}
               </li>
             ))}
           </ul>
