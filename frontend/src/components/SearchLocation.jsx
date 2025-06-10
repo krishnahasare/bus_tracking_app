@@ -69,22 +69,6 @@ export default function SearchLocation() {
           </GoogleMap>
         </LoadScript>
       </div>
-
-      {/* Display location logs */}
-      <div>
-        <h3 className="text-xl font-semibold mb-2">All Bus Locations:</h3>
-        {allLocations.length === 0 ? (
-          <p>No data yet.</p>
-        ) : (
-          <ul className="list-disc list-inside max-h-64 overflow-auto border p-4 rounded bg-gray-50">
-            {allLocations.map((loc) => (
-              <li key={loc._id}>
-                Lat: {loc.latitude}, Lng: {loc.longitude}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
     </div>
   );
 }
