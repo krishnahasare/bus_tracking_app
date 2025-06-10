@@ -11,7 +11,7 @@ const StudentLogs = () => {
 
   const fetchStudentLogs = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/attendance/student/${rfid}`);
+      const response = await axios.get(`https://bus-tracking-app-wt0f.onrender.com/api/attendance/student/${rfid}`);
       setStudentData(response.data);
       setError(null);
     } catch (err) {
@@ -30,7 +30,7 @@ const StudentLogs = () => {
 
   const handleLogAttendance = async () => {
     try {
-      await axios.post('http://localhost:5000/api/attendance/log', {
+      await axios.post('https://bus-tracking-app-wt0f.onrender.com/api/attendance/log', {
         rfid,
         status: 'Check In',
       });

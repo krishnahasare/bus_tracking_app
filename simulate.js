@@ -14,7 +14,7 @@ async function simulateMovement() {
   currentLng += getRandomDelta();
 
   try {
-    const response = await axios.post('https://bus-tracking-app-wt0f.onrender.com/searchlocation', {
+    const response = await axios.post('http://localhost:5000/searchlocation', {
       latitude: currentLat,
       longitude: currentLng,
     });

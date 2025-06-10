@@ -1,109 +1,86 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-import { useNavigate } from 'react-router-dom';
 
 const containerStyle = {
   width: '100%',
-  height: '400px',
+  height: '600px', // Increased height for a bigger map!
 };
 
-const center = {
-  lat: 19.0760,
-  lng: 72.8777,
+const defaultCenter = {
+  lat: 19.0760, // Mumbai coordinates
+  lng: 72.8777, // Mumbai coordinates
 };
 
 const SearchLocation = () => {
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
   const [markerPosition, setMarkerPosition] = useState(null);
-  const [savedLocations, setSavedLocations] = useState([]);
   const [error, setError] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default to closed
-  const navigate = useNavigate();
+  const [googleInstance, setGoogleInstance] = useState(null);
 
   useEffect(() => {
-    const fetchSavedLocations = async () => {
+    const fetchLiveLocation = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/buslocation');
-        setSavedLocations(response.data);
+        const response = await axios.get('https://bus-tracking-app-wt0f.onrender.com/api/buslocation');
+        const locations = response.data;
+
+        if (locations && locations.length > 0) {
+          const latestLocation = locations[locations.length - 1];
+          setMarkerPosition({
+            lat: latestLocation.latitude,
+            lng: latestLocation.longitude,
+          });
+          setError(null);
+        } else {
+          setError('No location data available.');
+          setMarkerPosition(null);
+        }
       } catch (err) {
-        setError('Failed to fetch saved locations.');
+        setError('Failed to fetch location. Make sure your backend is running.');
+        console.error('Error fetching location:', err);
+        setMarkerPosition(null);
       }
     };
-    fetchSavedLocations();
+
+    fetchLiveLocation();
+    const intervalId = setInterval(fetchLiveLocation, 1000);
+    return () => clearInterval(intervalId);
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const lat = parseFloat(latitude);
-    const lng = parseFloat(longitude);
-
-    if (isNaN(lat) || isNaN(lng)) {
-      setError('Please enter valid latitude and longitude values.');
-      return;
-    }
-
-    setMarkerPosition({ lat, lng });
-    setError(null);
-
-    try {
-      await axios.post('http://localhost:5000/searchlocation', { latitude: lat, longitude: lng });
-      const response = await axios.get('http://localhost:5000/api/buslocation');
-      setSavedLocations(response.data);
-    } catch (err) {
-      setError('Failed to save location.');
-    }
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
   return (
-    <div className="p-6 max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Live Bus Tracker</h2>
+    <div className="p-6">
+      <h2 className="text-3xl font-extrabold mb-8 text-center text-gray-800">Live Bus Tracker</h2>
 
-      <div className="mt-6 mb-6">
-       <LoadScript
-  googleMapsApiKey="AIzaSyDjWXHa4cpYsQk01UBQUi6WtLtaZRRm1RI"
-  onLoad={() => setGoogleInstance(window.google)}
->
-
-          <GoogleMap
-            mapContainerStyle={containerStyle}
-            center={markerPosition || defaultCenter}
-            zoom={15}
+      {/* Outer container for the gradient border and main styling */}
+      <div
+        className="relative max-w-5xl mx-auto mt-6 mb-6 p-1 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-3xl shadow-2xl transform transition-all duration-300 ease-in-out hover:scale-[1.005] hover:shadow-3xl"
+      >
+        {/* Inner container for the actual map, creating the "border" effect */}
+        <div
+          className="relative rounded-[calc(1.5rem-4px)] overflow-hidden bg-white" // <-- Pay close attention here if errors persist
+        >
+          <LoadScript
+            googleMapsApiKey="AIzaSyDjWXHa4cpYsQk01UBQUi6WtLtaZRRm1RI" // <--- REMEMBER TO REPLACE THIS WITH YOUR ACTUAL KEY
+            onLoad={() => setGoogleInstance(window.google)}
           >
-      {markerPosition && googleInstance && (
-  <Marker
-    position={markerPosition}
-    icon={{
-      url: 'http://maps.google.com/mapfiles/kml/shapes/bus.png', // ✅ This works reliably
-      scaledSize: new googleInstance.maps.Size(40, 40),
-    }}
-  />
-)}
-
-          </GoogleMap>
-        </LoadScript>
+            <GoogleMap
+              mapContainerStyle={containerStyle}
+              center={markerPosition || defaultCenter}
+              zoom={15}
+            >
+              {markerPosition && googleInstance && (
+                <Marker
+                  position={markerPosition}
+                  icon={{
+                    url: 'http://maps.google.com/mapfiles/ms/icons/bus.png',
+                    scaledSize: new googleInstance.maps.Size(40, 40),
+                  }}
+                />
+              )}
+            </GoogleMap>
+          </LoadScript>
+        </div>
       </div>
-
-      {/* Display location logs */}
-      <div>
-        <h3 className="text-xl font-semibold mb-2">All Bus Locations:</h3>
-        {allLocations.length === 0 ? (
-          <p>No data yet.</p>
-        ) : (
-          <ul className="list-disc list-inside max-h-64 overflow-auto border p-4 rounded bg-gray-50">
-            {allLocations.map((loc) => (
-              <li key={loc._id}>
-                Lat: {loc.latitude}, Lng: {loc.longitude}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
     </div>
   );
 };
