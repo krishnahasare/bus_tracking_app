@@ -1,44 +1,63 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { GoogleMap, Marker, LoadScript } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { useNavigate } from 'react-router-dom';
 
 const containerStyle = {
   width: '100%',
   height: '400px',
 };
 
-const defaultCenter = {
+const center = {
   lat: 19.0760,
   lng: 72.8777,
 };
 
-export default function SearchLocation() {
+const SearchLocation = () => {
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
   const [markerPosition, setMarkerPosition] = useState(null);
-  const [allLocations, setAllLocations] = useState([]);
-  const [googleInstance, setGoogleInstance] = useState(null);
+  const [savedLocations, setSavedLocations] = useState([]);
+  const [error, setError] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default to closed
+  const navigate = useNavigate();
 
-
-  // Fetch latest location every 5 seconds
   useEffect(() => {
-    const intervalId = setInterval(fetchLatestLocation, 1000);
-    fetchLatestLocation(); // initial load
-
-    return () => clearInterval(intervalId); // cleanup
+    const fetchSavedLocations = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/buslocation');
+        setSavedLocations(response.data);
+      } catch (err) {
+        setError('Failed to fetch saved locations.');
+      }
+    };
+    fetchSavedLocations();
   }, []);
 
-  const fetchLatestLocation = async () => {
-    try {
-      const res = await axios.get('https://bus-tracking-app-wt0f.onrender.com/api/buslocation');
-      const locations = res.data;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const lat = parseFloat(latitude);
+    const lng = parseFloat(longitude);
 
-      if (locations.length > 0) {
-        const latest = locations[locations.length - 1];
-        setMarkerPosition({ lat: latest.latitude, lng: latest.longitude });
-        setAllLocations(locations);
-      }
-    } catch (error) {
-      console.error('Error fetching locations:', error);
+    if (isNaN(lat) || isNaN(lng)) {
+      setError('Please enter valid latitude and longitude values.');
+      return;
     }
+
+    setMarkerPosition({ lat, lng });
+    setError(null);
+
+    try {
+      await axios.post('http://localhost:5000/searchlocation', { latitude: lat, longitude: lng });
+      const response = await axios.get('http://localhost:5000/api/buslocation');
+      setSavedLocations(response.data);
+    } catch (err) {
+      setError('Failed to save location.');
+    }
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   return (
@@ -69,6 +88,24 @@ export default function SearchLocation() {
           </GoogleMap>
         </LoadScript>
       </div>
+
+      {/* Display location logs */}
+      <div>
+        <h3 className="text-xl font-semibold mb-2">All Bus Locations:</h3>
+        {allLocations.length === 0 ? (
+          <p>No data yet.</p>
+        ) : (
+          <ul className="list-disc list-inside max-h-64 overflow-auto border p-4 rounded bg-gray-50">
+            {allLocations.map((loc) => (
+              <li key={loc._id}>
+                Lat: {loc.latitude}, Lng: {loc.longitude}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
-}
+};
+
+export default SearchLocation;
