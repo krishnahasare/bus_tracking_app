@@ -31,7 +31,7 @@ const StudentLogs = () => {
   const handleLogAttendance = async () => {
     try {
       await axios.post('https://bus-tracking-app-wt0f.onrender.com/api/attendance/log', {
-        rfid,
+        rfidUid: rfid,
         status: 'Check In',
       });
       alert('Attendance logged successfully!');
