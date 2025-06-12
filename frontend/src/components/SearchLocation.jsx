@@ -4,7 +4,11 @@ import {
   GoogleMap,
   LoadScript,
   Marker,
+<<<<<<< HEAD
   Polyline,
+=======
+  Polyline
+>>>>>>> 28e29da943a76cbdc600e237de656b1ac8ee7aeb
 } from '@react-google-maps/api';
 
 const containerStyle = {
@@ -13,7 +17,11 @@ const containerStyle = {
 };
 
 const defaultCenter = {
+<<<<<<< HEAD
   lat: 19.0760, // Mumbai
+=======
+  lat: 19.0760,
+>>>>>>> 28e29da943a76cbdc600e237de656b1ac8ee7aeb
   lng: 72.8777,
 };
 
@@ -21,7 +29,11 @@ const BUS_ID = 'bus_101';
 
 const SearchLocation = () => {
   const [markerPosition, setMarkerPosition] = useState(null);
+<<<<<<< HEAD
   const [routePath, setRoutePath] = useState([]);
+=======
+  const [routePath, setRoutePath] = useState([]); // ✅ Step 1: Store route path
+>>>>>>> 28e29da943a76cbdc600e237de656b1ac8ee7aeb
   const [error, setError] = useState(null);
   const [googleInstance, setGoogleInstance] = useState(null);
 
@@ -34,6 +46,7 @@ const SearchLocation = () => {
         const locations = response.data;
 
         if (locations && locations.length > 0) {
+<<<<<<< HEAD
           // API returns newest first
           const latest = locations[0];
           setMarkerPosition({ lat: latest.latitude, lng: latest.longitude });
@@ -46,6 +59,16 @@ const SearchLocation = () => {
             .reverse(); // Optional: draw from oldest to latest
 
           setRoutePath(path);
+=======
+          const latestLocation = locations[locations.length - 1];
+          const newPosition = {
+            lat: latestLocation.latitude,
+            lng: latestLocation.longitude,
+          };
+
+          setMarkerPosition(newPosition);
+          setRoutePath((prevPath) => [...prevPath, newPosition]); // ✅ Step 2: Append to route
+>>>>>>> 28e29da943a76cbdc600e237de656b1ac8ee7aeb
           setError(null);
         } else {
           setError('No location data available for this bus.');
@@ -71,10 +94,17 @@ const SearchLocation = () => {
         Live Bus Tracker with Route
       </h2>
 
+<<<<<<< HEAD
       <div className="relative max-w-5xl mx-auto mt-6 mb-6 p-1 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-3xl shadow-2xl transform transition-all duration-300 ease-in-out hover:scale-[1.005] hover:shadow-3xl">
         <div className="relative rounded-[calc(1.5rem-4px)] overflow-hidden bg-white">
           <LoadScript
             googleMapsApiKey="AIzaSyDjWXHa4cpYsQk01UBQUi6WtLtaZRRm1RI" // Replace with your key
+=======
+      <div className="relative max-w-5xl mx-auto mt-6 mb-6 p-1 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-3xl shadow-2xl">
+        <div className="relative rounded-[calc(1.5rem-4px)] overflow-hidden bg-white">
+          <LoadScript
+            googleMapsApiKey="AIzaSyDjWXHa4cpYsQk01UBQUi6WtLtaZRRm1RI"
+>>>>>>> 28e29da943a76cbdc600e237de656b1ac8ee7aeb
             onLoad={() => setGoogleInstance(window.google)}
           >
             <GoogleMap
@@ -93,14 +123,27 @@ const SearchLocation = () => {
                 />
               )}
 
+<<<<<<< HEAD
               {/* Route Polyline */}
+=======
+              {/* ✅ Step 3: Draw the route path */}
+>>>>>>> 28e29da943a76cbdc600e237de656b1ac8ee7aeb
               {routePath.length > 1 && (
                 <Polyline
                   path={routePath}
                   options={{
+<<<<<<< HEAD
                     strokeColor: '#FF0000',
                     strokeOpacity: 0.8,
                     strokeWeight: 4,
+=======
+                    strokeColor: 'red',
+                    strokeOpacity: 0.9,
+                    strokeWeight: 7,
+                    clickable: false,
+                    draggable: false,
+                    editable: false,
+>>>>>>> 28e29da943a76cbdc600e237de656b1ac8ee7aeb
                     geodesic: true,
                   }}
                 />
