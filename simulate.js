@@ -1,20 +1,27 @@
 import axios from 'axios';
 
-// Base location – (e.g., near Mumbai)
-let currentLat = 19.0760;
-let currentLng = 72.8777;
+// Start and End points (You can set these to anything you want)
+const startPoint = { lat: 19.0760, lng: 72.8777 }; // Mumbai
+const endPoint = { lat: 19.0860, lng: 72.8877 };   // Few km away
 
-function getRandomDelta() {
-  return (Math.random() - 0.5) * 0.002; // small variation
+let currentLat = startPoint.lat;
+let currentLng = startPoint.lng;
+
+const stepSize = 0.0002; // Smaller = slower movement
+
+function moveTowardsTarget(current, target, step) {
+  const delta = target - current;
+  if (Math.abs(delta) < step) return target;
+  return current + (delta > 0 ? step : -step);
 }
 
 async function simulateMovement() {
-  // Move slightly
-  currentLat += getRandomDelta();
-  currentLng += getRandomDelta();
+  // Move toward endPoint step-by-step
+  currentLat = moveTowardsTarget(currentLat, endPoint.lat, stepSize);
+  currentLng = moveTowardsTarget(currentLng, endPoint.lng, stepSize);
 
   try {
-    const response = await axios.post('https://bus-tracking-app-wt0f.onrender.com/searchlocation', {
+    const response = await axios.post('http://localhost:5000/searchlocation', {
       latitude: currentLat,
       longitude: currentLng,
     });
@@ -23,7 +30,15 @@ async function simulateMovement() {
   } catch (error) {
     console.error('[✘] Failed to send location:', error.message);
   }
+
+  // Optional: stop simulation if destination reached
+  if (
+    Math.abs(currentLat - endPoint.lat) < 0.0001 &&
+    Math.abs(currentLng - endPoint.lng) < 0.0001
+  ) {
+    console.log('✅ Destination reached.');
+    process.exit(0); // Stop script
+  }
 }
 
-// Send new location every 5 seconds
-setInterval(simulateMovement, 1000);
+setInterval(simulateMovement, 1000); // Move every second
