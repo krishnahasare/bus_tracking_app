@@ -4,7 +4,7 @@ import {
   GoogleMap,
   LoadScript,
   Marker,
-  Polyline
+  Polyline,
 } from '@react-google-maps/api';
 
 const containerStyle = {
@@ -13,13 +13,15 @@ const containerStyle = {
 };
 
 const defaultCenter = {
-  lat: 19.0760,
+  lat: 19.0760, // Mumbai
   lng: 72.8777,
 };
 
+const BUS_ID = 'bus_101';
+
 const SearchLocation = () => {
   const [markerPosition, setMarkerPosition] = useState(null);
-  const [routePath, setRoutePath] = useState([]); // ✅ Step 1: Store route path
+  const [routePath, setRoutePath] = useState([]);
   const [error, setError] = useState(null);
   const [googleInstance, setGoogleInstance] = useState(null);
 
@@ -27,26 +29,32 @@ const SearchLocation = () => {
     const fetchLiveLocation = async () => {
       try {
         const response = await axios.get('https://bus-tracking-app-wt0f.onrender.com/api/buslocation');
-        const locations = response.data
+        const locations = response.data;
 
         if (locations && locations.length > 0) {
-          const latestLocation = locations[locations.length - 1];
-          const newPosition = {
-            lat: latestLocation.latitude,
-            lng: latestLocation.longitude,
-          };
+          // API returns newest first
+          const latest = locations[0];
+          setMarkerPosition({ lat: latest.latitude, lng: latest.longitude });
 
-          setMarkerPosition(newPosition);
-          setRoutePath((prevPath) => [...prevPath, newPosition]); // ✅ Step 2: Append to route
+          const path = locations
+            .map(loc => ({
+              lat: loc.latitude,
+              lng: loc.longitude,
+            }))
+            .reverse(); // Optional: draw from oldest to latest
+
+          setRoutePath(path);
           setError(null);
         } else {
-          setError('No location data available.');
+          setError('No location data available for this bus.');
           setMarkerPosition(null);
+          setRoutePath([]);
         }
       } catch (err) {
         setError('Failed to fetch location. Make sure your backend is running.');
         console.error('Error fetching location:', err);
         setMarkerPosition(null);
+        setRoutePath([]);
       }
     };
 
@@ -57,12 +65,14 @@ const SearchLocation = () => {
 
   return (
     <div className="p-6">
-      <h2 className="text-3xl font-extrabold mb-8 text-center text-gray-800">Live Bus Tracker</h2>
+      <h2 className="text-3xl font-extrabold mb-8 text-center text-gray-800">
+        Live Bus Tracker with Route
+      </h2>
 
-      <div className="relative max-w-5xl mx-auto mt-6 mb-6 p-1 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-3xl shadow-2xl">
+      <div className="relative max-w-5xl mx-auto mt-6 mb-6 p-1 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-3xl shadow-2xl transform transition-all duration-300 ease-in-out hover:scale-[1.005] hover:shadow-3xl">
         <div className="relative rounded-[calc(1.5rem-4px)] overflow-hidden bg-white">
           <LoadScript
-            googleMapsApiKey="AIzaSyDjWXHa4cpYsQk01UBQUi6WtLtaZRRm1RI"
+            googleMapsApiKey="AIzaSyDjWXHa4cpYsQk01UBQUi6WtLtaZRRm1RI" // Replace with your key
             onLoad={() => setGoogleInstance(window.google)}
           >
             <GoogleMap
@@ -70,6 +80,7 @@ const SearchLocation = () => {
               center={markerPosition || defaultCenter}
               zoom={15}
             >
+              {/* Marker */}
               {markerPosition && googleInstance && (
                 <Marker
                   position={markerPosition}
@@ -80,17 +91,14 @@ const SearchLocation = () => {
                 />
               )}
 
-              {/* ✅ Step 3: Draw the route path */}
+              {/* Route Polyline */}
               {routePath.length > 1 && (
                 <Polyline
                   path={routePath}
                   options={{
-                    strokeColor: 'red',
-                    strokeOpacity: 0.9,
-                    strokeWeight: 7,
-                    clickable: false,
-                    draggable: false,
-                    editable: false,
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 4,
                     geodesic: true,
                   }}
                 />

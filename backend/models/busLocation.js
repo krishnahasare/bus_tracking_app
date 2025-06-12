@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 
 const busLocationSchema = new mongoose.Schema({
+  busId: {
+    type: String,
+    required: true,
+    index: true // optional: improves query performance when filtering by busId
+  },
   latitude: {
     type: Number,
     required: true
