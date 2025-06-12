@@ -27,7 +27,7 @@ const SearchLocation = () => {
     const fetchLiveLocation = async () => {
       try {
         const response = await axios.get('https://bus-tracking-app-wt0f.onrender.com/api/buslocation');
-        const locations = response.data;
+        const locations = response.data
 
         if (locations && locations.length > 0) {
           const latestLocation = locations[locations.length - 1];
