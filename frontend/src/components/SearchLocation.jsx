@@ -26,7 +26,7 @@ const SearchLocation = () => {
   useEffect(() => {
     const fetchLiveLocation = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/buslocation');
+        const response = await axios.get('https://bus-tracking-app-wt0f.onrender.com/api/buslocation');
         const locations = response.data;
 
         if (locations && locations.length > 0) {
