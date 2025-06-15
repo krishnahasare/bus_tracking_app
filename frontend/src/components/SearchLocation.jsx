@@ -22,9 +22,7 @@ const SearchLocation = () => {
   useEffect(() => {
     const fetchLiveLocation = async () => {
       try {
-        const response = await axios.get(
-          `https://bus-tracking-app-wt0f.onrender.com/api/buslocation?busId=${BUS_ID}`
-        );
+        const response = await axios.get(`https://bus-tracking-app-wt0f.onrender.com/api/buslocation?busId=${BUS_ID}`);
         const locations = response.data;
 
         if (locations && locations.length > 0) {
@@ -86,4 +84,4 @@ const SearchLocation = () => {
   );
 };
 
-export default SearchLocation;
+export default SearchLocation; 
