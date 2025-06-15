@@ -17,6 +17,17 @@ router.get('/api/buslocation', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+router.get('/buslocation/:date', async (req, res) => {
+  const { date } = req.params;
+  const start = new Date(date);
+  const end = new Date(date);
+  end.setDate(end.getDate() + 1);
+
+  const locations = await BusLocation.find({
+    timestamp: { $gte: start, $lt: end }
+  });
+  res.json(locations);
+});
 
 // POST: Save new bus location
 router.post('/api/buslocation', async (req, res) => {
