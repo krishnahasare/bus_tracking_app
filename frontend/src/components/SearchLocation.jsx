@@ -90,7 +90,7 @@ const SearchLocation = () => {
       <div className="relative max-w-5xl mx-auto p-1 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-3xl shadow-2xl">
         <div className="relative rounded-[calc(1.5rem-4px)] overflow-hidden bg-white">
           <LoadScript
-            googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY"
+            googleMapsApiKey="AIzaSyDjWXHa4cpYsQk01UBQUi6WtLtaZRRm1RI"
             onLoad={() => setGoogleInstance(window.google)}
           >
             <GoogleMap
