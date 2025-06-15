@@ -3,34 +3,33 @@ import BusLocation from '../models/busLocation.js';
 
 const router = express.Router();
 
-// GET: Fetch all bus locations or filter by busId
-router.get('/api/buslocation', async (req, res) => {
+// ✅ GET: Fetch locations filtered by busId or date (via query params)
+router.get('/buslocation', async (req, res) => {
   try {
-    const { busId } = req.query;
+    const { busId, date } = req.query;
+    const filter = {};
 
-    const filter = busId ? { busId } : {};
+    if (busId) {
+      filter.busId = busId;
+    }
 
-    const locations = await BusLocation.find(filter).sort({ timestamp: -1 }); // newest first
+    if (date) {
+      const start = new Date(date);
+      const end = new Date(date);
+      end.setDate(end.getDate() + 1);
+      filter.timestamp = { $gte: start, $lt: end };
+    }
+
+    const locations = await BusLocation.find(filter).sort({ timestamp: -1 });
     res.json(locations);
   } catch (error) {
     console.error('Error fetching locations:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
-router.get('/buslocation/:date', async (req, res) => {
-  const { date } = req.params;
-  const start = new Date(date);
-  const end = new Date(date);
-  end.setDate(end.getDate() + 1);
 
-  const locations = await BusLocation.find({
-    timestamp: { $gte: start, $lt: end }
-  });
-  res.json(locations);
-});
-
-// POST: Save new bus location
-router.post('/api/buslocation', async (req, res) => {
+// ✅ POST: Save new bus location
+router.post('/buslocation', async (req, res) => {
   try {
     const { latitude, longitude, busId } = req.body;
 

@@ -10,7 +10,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<AdminDashboard />} />
         <Route path="/attendance" element={<AttendanceDashboard />} />
-        <Route path="/searchlocation" element={<SearchLocation />} />
+        <Route path="/buslocation" element={<SearchLocation />} />
         <Route path="/student-logs" element={<StudentLogs />} />
         <Route path="/emergencies-overspeeding" element={<div>Emergencies/Overspeeding Page (To be implemented)</div>} />
       </Routes>
