@@ -8,7 +8,7 @@ let currentLat = startPoint.lat;
 let currentLng = startPoint.lng;
 
 const stepSize = 0.0002; // Smaller = slower movement
-const BUS_ID = 'bus_101';
+const BUS_ID = 'bus_103';
 
 function moveTowardsTarget(current, target, step) {
   const delta = target - current;

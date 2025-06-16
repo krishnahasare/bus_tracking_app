@@ -3,28 +3,36 @@ import BusLocation from '../models/busLocation.js';
 
 const router = express.Router();
 
-// ✅ GET: Fetch locations filtered by busId or date (via query params)
+// ✅ GET: Fetch latest + path for all buses
 router.get('/buslocation', async (req, res) => {
   try {
-    const { busId, date } = req.query;
-    const filter = {};
+    const allLocations = await BusLocation.find().sort({ timestamp: -1 });
 
-    if (busId) {
-      filter.busId = busId;
+    const busMap = {};
+
+    for (const loc of allLocations) {
+      const busId = loc.busId;
+      if (!busMap[busId]) {
+        busMap[busId] = {
+          busId,
+          latest: {
+            latitude: loc.latitude,
+            longitude: loc.longitude,
+          },
+          path: [],
+        };
+      }
+
+      busMap[busId].path.push({
+        latitude: loc.latitude,
+        longitude: loc.longitude,
+      });
     }
 
-    if (date) {
-      const start = new Date(date);
-      const end = new Date(date);
-      end.setDate(end.getDate() + 1);
-      filter.timestamp = { $gte: start, $lt: end };
-    }
-
-    const locations = await BusLocation.find(filter).sort({ timestamp: -1 });
-    res.json(locations);
+    res.json(Object.values(busMap)); // ⬅️ All buses with latest + path
   } catch (error) {
-    console.error('Error fetching locations:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error in GET /buslocation:', error);
+    res.status(500).json({ message: 'Failed to fetch bus data' });
   }
 });
 
