@@ -35,6 +35,13 @@ const sampleBuses = [
     driverName: 'Vikas Pawar',
     status: 'active',
   },
+   {
+    busId: 'bus_105',
+    name: 'Kolhapur Rapid',
+    route: 'Kolhapur to Pune',
+    driverName: 'Arun Pawar',
+    status: 'active',
+  },
 ];
 
 const seedBuses = async () => {

@@ -8,7 +8,7 @@ let currentLat = startPoint.lat;
 let currentLng = startPoint.lng;
 
 const stepSize = 0.0002; // Smaller = slower movement
-const BUS_ID = 'bus_103';
+const BUS_ID = 'bus_105';
 
 function moveTowardsTarget(current, target, step) {
   const delta = target - current;
@@ -21,8 +21,8 @@ async function sendLocation() {
   currentLng = moveTowardsTarget(currentLng, endPoint.lng, stepSize);
 
   try {
-    const response = await axios.post('http://localhost:5000/buslocation', {
-      latitude: currentLat,
+        const response = await axios.post('https://bus-tracking-app-wt0f.onrender.com/buslocation', {
+          latitude: currentLat,
       longitude: currentLng,
       busId: BUS_ID
     });
