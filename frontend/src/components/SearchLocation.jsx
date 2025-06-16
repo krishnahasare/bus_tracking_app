@@ -17,8 +17,8 @@ const defaultCenter = {
   lng: 72.8777,
 };
 
-// 🔵 Predefined color list
-const colors = ['#FF5733', '#1E90FF', '#28A745', '#FFC300', '#8E44AD'];
+// 5 unique colors for buses
+const colors = ['#FF0000', '#0000FF', '#008000', '#FFA500', '#800080'];
 
 const SearchLocation = () => {
   const [buses, setBuses] = useState([]);
@@ -53,7 +53,7 @@ const SearchLocation = () => {
         onLoad={() => setGoogleInstance(window.google)}
       >
         {selectedBusId ? (
-          // ✅ View Live (Don't change)
+          // ✅ INDIVIDUAL BUS MAP VIEW
           <div className="max-w-7xl mx-auto mb-8 rounded-xl shadow-xl overflow-hidden border">
             <div className="p-4 bg-gray-100 text-lg font-semibold flex justify-between items-center">
               Bus ID: {selectedBus.busId}
@@ -64,6 +64,7 @@ const SearchLocation = () => {
                 Back
               </button>
             </div>
+
             <GoogleMap
               mapContainerStyle={fullScreenStyle}
               center={
@@ -85,6 +86,7 @@ const SearchLocation = () => {
                   }}
                 />
               )}
+
               {selectedBus.path.length > 1 && (
                 <Polyline
                   path={selectedBus.path.map((point) => ({
@@ -99,81 +101,111 @@ const SearchLocation = () => {
                 />
               )}
             </GoogleMap>
-          </div>
-        ) : (
-          <>
-            {/* 🔵 MULTI-BUS MAP VIEW */}
-            {buses.map((bus, index) => {
-              const color = colors[index % colors.length]; // Assign unique color
-              return (
-                <div
-                  key={index}
-                  className="max-w-5xl mx-auto mb-8 rounded-xl shadow-xl overflow-hidden border"
-                >
-                  <div className="p-4 bg-gray-100 text-lg font-semibold flex justify-between items-center">
-                    Bus ID: {bus.busId}
-                    <button
-                      onClick={() => setSelectedBusId(bus.busId)}
-                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                      View Live
-                    </button>
-                  </div>
-                  <GoogleMap
-                    mapContainerStyle={containerStyle}
-                    center={
-                      bus.latest
-                        ? { lat: bus.latest.latitude, lng: bus.latest.longitude }
-                        : defaultCenter
-                    }
-                    zoom={15}
-                  >
-                    {bus.latest && googleInstance && (
-                      <Marker
-                        position={{
-                          lat: bus.latest.latitude,
-                          lng: bus.latest.longitude,
-                        }}
-                        icon={{
-                          url: 'http://maps.google.com/mapfiles/ms/icons/bus.png',
-                          scaledSize: new googleInstance.maps.Size(40, 40),
-                        }}
-                      />
-                    )}
-                    {bus.path.length > 1 && (
-                      <Polyline
-                        path={bus.path.map((point) => ({
-                          lat: point.latitude,
-                          lng: point.longitude,
-                        }))}
-                        options={{
-                          strokeColor: color,
-                          strokeOpacity: 0.8,
-                          strokeWeight: 4,
-                        }}
-                      />
-                    )}
-                  </GoogleMap>
-                </div>
-              );
-            })}
 
-            {/* 🔵 LEGEND SECTION */}
-            <div className="max-w-4xl mx-auto mt-6 p-4 bg-gray-100 rounded shadow-md">
-              <h3 className="text-xl font-semibold mb-2">Color Legend</h3>
-              <ul className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {buses.map((bus, index) => (
-                  <li key={index} className="flex items-center space-x-2">
-                    <div
-                      className="w-6 h-3 rounded"
-                      style={{ backgroundColor: colors[index % colors.length] }}
-                    ></div>
-                    <span>{bus.busId}</span>
-                  </li>
-                ))}
+            {/* ✅ BUS DETAILS BELOW MAP */}
+            <div className="bg-white p-6 border-t">
+              <h2 className="text-xl font-semibold mb-4">Bus Details</h2>
+              <ul className="space-y-2 text-gray-800">
+                <li><strong>Bus ID:</strong> {selectedBus.busId}</li>
+                <li>
+                  <strong>Current Location:</strong>{' '}
+                  {selectedBus.latest
+                    ? `${selectedBus.latest.latitude.toFixed(4)}, ${selectedBus.latest.longitude.toFixed(4)}`
+                    : 'Not available'}
+                </li>
+                <li>
+                  <strong>Total Stops Recorded:</strong> {selectedBus.path.length}
+                </li>
+                <li>
+                  <strong>Last Updated:</strong>{' '}
+                  {selectedBus.latest?.timestamp
+                    ? new Date(selectedBus.latest.timestamp).toLocaleString()
+                    : 'Not available'}
+                </li>
               </ul>
             </div>
-          </>
+          </div>
+        ) : (
+          // ✅ MULTI-BUS VIEW
+          buses.map((bus, index) => (
+            <div
+              key={index}
+              className="max-w-5xl mx-auto mb-8 rounded-xl shadow-xl overflow-hidden border"
+            >
+              <div
+                className="p-4 bg-gray-100 text-lg font-semibold flex justify-between items-center"
+                style={{ borderLeft: `8px solid ${colors[index % colors.length]}` }}
+              >
+                Bus ID: {bus.busId}
+                <button
+                  onClick={() => setSelectedBusId(bus.busId)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  View Live
+                </button>
+              </div>
+
+              <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={
+                  bus.latest
+                    ? { lat: bus.latest.latitude, lng: bus.latest.longitude }
+                    : defaultCenter
+                }
+                zoom={15}
+              >
+                {bus.latest && googleInstance && (
+                  <Marker
+                    position={{
+                      lat: bus.latest.latitude,
+                      lng: bus.latest.longitude,
+                    }}
+                    icon={{
+                      url: 'http://maps.google.com/mapfiles/ms/icons/bus.png',
+                      scaledSize: new googleInstance.maps.Size(40, 40),
+                    }}
+                  />
+                )}
+
+                {bus.path.length > 1 && (
+                  <Polyline
+                    path={bus.path.map((point) => ({
+                      lat: point.latitude,
+                      lng: point.longitude,
+                    }))}
+                    options={{
+                      strokeColor: colors[index % colors.length],
+                      strokeOpacity: 0.8,
+                      strokeWeight: 4,
+                    }}
+                  />
+                )}
+              </GoogleMap>
+
+              {/* ✅ BUS DETAILS BELOW EACH MAP */}
+              <div className="bg-white p-4 border-t">
+                <h2 className="text-lg font-semibold mb-2">Bus Details</h2>
+                <ul className="space-y-1 text-gray-800 text-sm">
+                  <li><strong>Bus ID:</strong> {bus.busId}</li>
+                  <li>
+                    <strong>Current Location:</strong>{' '}
+                    {bus.latest
+                      ? `${bus.latest.latitude.toFixed(4)}, ${bus.latest.longitude.toFixed(4)}`
+                      : 'Not available'}
+                  </li>
+                  <li>
+                    <strong>Total Stops Recorded:</strong> {bus.path?.length || 0}
+                  </li>
+                  <li>
+                    <strong>Last Updated:</strong>{' '}
+                    {bus.latest?.timestamp
+                      ? new Date(bus.latest.timestamp).toLocaleString()
+                      : 'Not available'}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          ))
         )}
       </LoadScript>
 
