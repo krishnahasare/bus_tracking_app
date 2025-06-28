@@ -3,11 +3,13 @@ import AdminDashboard from './components/AdminDashboard';
 import AttendanceDashboard from "./components/AttendanceDashboard";
 import StudentLogs from './components/StudentLogs';
 import SearchLocation from './components/SearchLocation';
+import AlertsPage from './components/AlertsPage';
 
 export default function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/emergencies-overspeeding" element={<AlertsPage />} />
         <Route path="/" element={<AdminDashboard />} />
         <Route path="/attendance" element={<AttendanceDashboard />} />
         <Route path="/buslocation" element={<SearchLocation />} />

@@ -63,7 +63,7 @@ const AdminDashboard = () => {
             <svg className="w-12 h-12 text-blue-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M12 4a8 8 0 100 16 8 8 0 000-16z" />
             </svg>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Overspeeding Records</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Alert Notifications </h3>
             <p className="text-gray-600 text-center">Monitor emergencies and overspeeding incidents.</p>
           </div>
         </div>

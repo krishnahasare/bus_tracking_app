@@ -8,6 +8,7 @@ const app = express();
 import dotenv from 'dotenv';
 dotenv.config();
 import busLocationRoutes from './routes/buslocation.js';
+import NotificationRoutes from './routes/Notification.js';
 
 // Middleware
 app.use(cors()); // Enable CORS for all origins (adjust if needed)
@@ -29,6 +30,7 @@ mongoose.connect(MONGO_URL)
 // Routes
 app.use('/api/attendance', attendanceRoutes);
 app.use('/', busLocationRoutes);
+app.use('/api/alerts', NotificationRoutes);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
