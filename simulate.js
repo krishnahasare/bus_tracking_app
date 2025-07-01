@@ -1,50 +1,55 @@
 import axios from 'axios';
+import polyline from '@mapbox/polyline'; // You need to install this: `npm i @mapbox/polyline`
 
-// Starting and ending coordinates
-const startPoint = { lat: 19.0760, lng: 72.8777 }; // Example: Mumbai
-const endPoint = { lat: 19.0860, lng: 72.8877 };   // Slightly away
+const BUS_ID = 'bus_203';
+const API_KEY = 'AIzaSyDjWXHa4cpYsQk01UBQUi6WtLtaZRRm1RI'; // 🔐 Replace with your real key
 
-let currentLat = startPoint.lat;
-let currentLng = startPoint.lng;
+const start = 'rankala  , Kolhapur'; // Starting point
+const end = 'D Y Patil College, Kasaba Bawada, Kolhapur';
 
-const stepSize = 0.0002; // Smaller = slower movement
-const BUS_ID = 'bus_105';
-
-function moveTowardsTarget(current, target, step) {
-  const delta = target - current;
-  if (Math.abs(delta) < step) return target;
-  return current + (delta > 0 ? step : -step);
-}
-
-async function sendLocation() {
-  currentLat = moveTowardsTarget(currentLat, endPoint.lat, stepSize);
-  currentLng = moveTowardsTarget(currentLng, endPoint.lng, stepSize);
+async function getRoute() {
+  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(start)}&destination=${encodeURIComponent(end)}&key=${API_KEY}`;
 
   try {
-        const response = await axios.post('https://bus-tracking-app-wt0f.onrender.com/buslocation', {
-          latitude: currentLat,
-      longitude: currentLng,
-      busId: BUS_ID
-    });
-
-    console.log(`✅ Location sent: ${currentLat.toFixed(5)}, ${currentLng.toFixed(5)}`);
-  } catch (error) {
-    if (error.response) {
-      console.error('❌ Server responded with:', error.response.status, error.response.data);
-    } else {
-      console.error('❌ Failed to send location:', error.message);
-    }
-  }
-
-  // Stop simulation when destination is reached
-  if (
-    Math.abs(currentLat - endPoint.lat) < 0.0001 &&
-    Math.abs(currentLng - endPoint.lng) < 0.0001
-  ) {
-    console.log('🏁 Destination reached.');
-    clearInterval(intervalId);
+    const res = await axios.get(url);
+    const encodedPoints = res.data.routes[0].overview_polyline.points;
+    return polyline.decode(encodedPoints); // Array of [lat, lng]
+  } catch (err) {
+    console.error('❌ Failed to fetch route:', err.message);
+    return [];
   }
 }
 
-// Run sendLocation every second
-const intervalId = setInterval(sendLocation, 1000);
+async function simulateBus(route) {
+  let index = 0;
+  const interval = setInterval(async () => {
+    if (index >= route.length) {
+      console.log('🏁 Bus reached destination.');
+      clearInterval(interval);
+      return;
+    }
+
+    const [lat, lng] = route[index];
+    try {
+      await axios.post('https://bus-tracking-app-wt0f.onrender.com/buslocation', {
+        latitude: lat,
+        longitude: lng,
+        busId: BUS_ID,
+      });
+      console.log(`📍 Sent location: ${lat.toFixed(5)}, ${lng.toFixed(5)}`);
+    } catch (err) {
+      console.error('❌ Send error:', err.message);
+    }
+
+    index++;
+  }, 2000); // Sends every 2 seconds
+}
+
+(async () => {
+  const route = await getRoute();
+  if (route.length > 0) {
+    simulateBus(route);
+  } else {
+    console.error('❌ No route found to simulate.');
+  }
+})();

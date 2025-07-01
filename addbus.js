@@ -8,41 +8,42 @@ const MONGO_URI ="mongodb+srv://karanpatil82005:karan123@cluster1.kmees1y.mongod
 
 const sampleBuses = [
   {
-    busId: 'bus_101',
-    name: 'Pune Express',
-    route: 'Pune to Mumbai',
+    busId: 'bus_201',
+    name: 'Tarabai Express',
+    route: 'Tarabai Park to DY Patil College',
     driverName: 'Ramesh Patil',
     status: 'active',
   },
   {
-    busId: 'bus_102',
-    name: 'Nagpur Shuttle',
-    route: 'Nagpur to Amravati',
+    busId: 'bus_202',
+    name: 'Rankala Shuttle',
+    route: 'Rankala Lake to DY Patil College',
     driverName: 'Suresh Deshmukh',
     status: 'active',
   },
   {
-    busId: 'bus_103',
-    name: 'Nashik Connect',
-    route: 'Nashik to Ahmednagar',
+    busId: 'bus_203',
+    name: 'University Connector',
+    route: 'Shivaji University to DY Patil College',
     driverName: 'Mahesh Jadhav',
     status: 'inactive',
   },
   {
-    busId: 'bus_104',
-    name: 'Aurangabad Rapid',
-    route: 'Aurangabad to Pune',
+    busId: 'bus_204',
+    name: 'Kasaba Rapid',
+    route: 'Kasaba Bawada to DY Patil College',
     driverName: 'Vikas Pawar',
     status: 'active',
   },
-   {
-    busId: 'bus_105',
-    name: 'Kolhapur Rapid',
-    route: 'Kolhapur to Pune',
+  {
+    busId: 'bus_205',
+    name: 'Shahupuri Runner',
+    route: 'Shahupuri to DY Patil College',
     driverName: 'Arun Pawar',
     status: 'active',
   },
 ];
+
 
 const seedBuses = async () => {
   try {
