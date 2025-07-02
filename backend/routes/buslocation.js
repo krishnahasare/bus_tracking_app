@@ -6,7 +6,7 @@ const router = express.Router();
 // ✅ GET: Fetch latest + path for all buses
 router.get('/buslocation', async (req, res) => {
   try {
-    const allLocations = await BusLocation.find();
+    const allLocations = await BusLocation.find().sort({ timestamp: -1 });
 
     const busMap = {};
 
