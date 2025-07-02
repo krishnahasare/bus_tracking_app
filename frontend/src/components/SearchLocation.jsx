@@ -1,13 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { GoogleMap, LoadScript, Marker, Polyline } from '@react-google-maps/api';
 
 const containerStyle = {
-  width: '100%',
-  height: '400px',
-};
-
-const fullScreenStyle = {
   width: '100%',
   height: '500px',
 };
@@ -17,7 +12,6 @@ const defaultCenter = {
   lng: 72.8777,
 };
 
-// 5 unique colors for buses
 const colors = ['#FF0000', '#0000FF', '#008000', '#FFA500', '#800080'];
 
 const SearchLocation = () => {
@@ -25,6 +19,8 @@ const SearchLocation = () => {
   const [selectedBusId, setSelectedBusId] = useState(null);
   const [googleInstance, setGoogleInstance] = useState(null);
   const [error, setError] = useState(null);
+
+  const routeCache = useRef({}); // Cache path per busId
 
   const fetchData = async () => {
     try {
@@ -44,6 +40,55 @@ const SearchLocation = () => {
 
   const selectedBus = buses.find((bus) => bus.busId === selectedBusId);
 
+  const renderMap = (bus, index, fullScreen = false) => {
+    const path =
+      routeCache.current[bus.busId] ||
+      (bus.path.length > 1 ? bus.path.map(p => ({ lat: p.latitude, lng: p.longitude })) : []);
+
+    // Cache the route only once to prevent redrawing
+    if (!routeCache.current[bus.busId] && path.length > 1) {
+      routeCache.current[bus.busId] = path;
+    }
+
+    return (
+      <GoogleMap
+        mapContainerStyle={fullScreen ? containerStyle : { width: '100%', height: '400px' }}
+        center={
+          bus.latest
+            ? { lat: bus.latest.latitude, lng: bus.latest.longitude }
+            : defaultCenter
+        }
+        zoom={15}
+      >
+        {/* Static polyline for route */}
+        {path.length > 1 && (
+          <Polyline
+            path={path}
+            options={{
+              strokeColor: colors[index % colors.length],
+              strokeOpacity: 0.9,
+              strokeWeight: 5,
+            }}
+          />
+        )}
+
+        {/* Live moving marker */}
+        {bus.latest && googleInstance && (
+          <Marker
+            position={{
+              lat: bus.latest.latitude,
+              lng: bus.latest.longitude,
+            }}
+            icon={{
+              url: 'http://maps.google.com/mapfiles/ms/icons/bus.png',
+              scaledSize: new googleInstance.maps.Size(40, 40),
+            }}
+          />
+        )}
+      </GoogleMap>
+    );
+  };
+
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold text-center mb-8">Live Bus Tracker</h1>
@@ -52,8 +97,7 @@ const SearchLocation = () => {
         googleMapsApiKey="AIzaSyDjWXHa4cpYsQk01UBQUi6WtLtaZRRm1RI"
         onLoad={() => setGoogleInstance(window.google)}
       >
-        {selectedBusId ? (
-          // ✅ INDIVIDUAL BUS MAP VIEW
+        {selectedBusId && selectedBus ? (
           <div className="max-w-7xl mx-auto mb-8 rounded-xl shadow-xl overflow-hidden border">
             <div className="p-4 bg-gray-100 text-lg font-semibold flex justify-between items-center">
               Bus ID: {selectedBus.busId}
@@ -65,42 +109,7 @@ const SearchLocation = () => {
               </button>
             </div>
 
-            <GoogleMap
-              mapContainerStyle={fullScreenStyle}
-              center={
-                selectedBus.latest
-                  ? { lat: selectedBus.latest.latitude, lng: selectedBus.latest.longitude }
-                  : defaultCenter
-              }
-              zoom={15}
-            >
-              {selectedBus.latest && googleInstance && (
-                <Marker
-                  position={{
-                    lat: selectedBus.latest.latitude,
-                    lng: selectedBus.latest.longitude,
-                  }}
-                  icon={{
-                    url: 'http://maps.google.com/mapfiles/ms/icons/bus.png',
-                    scaledSize: new googleInstance.maps.Size(40, 40),
-                  }}
-                />
-              )}
-
-              {selectedBus.path.length > 1 && (
-                <Polyline
-                  path={selectedBus.path.map((point) => ({
-                    lat: point.latitude,
-                    lng: point.longitude,
-                  }))}
-                  options={{
-                    strokeColor: '#1E90FF',
-                    strokeOpacity: 0.8,
-                    strokeWeight: 4,
-                  }}
-                />
-              )}
-            </GoogleMap>
+            {renderMap(selectedBus, 0, true)}
 
             <div className="bg-white p-6 border-t">
               <h2 className="text-xl font-semibold mb-4">Bus Details</h2>
@@ -125,7 +134,6 @@ const SearchLocation = () => {
             </div>
           </div>
         ) : (
-          // ✅ MULTI-BUS VIEW WITH SORTING
           [...buses]
             .sort((a, b) => a.busId.localeCompare(b.busId))
             .map((bus, index) => (
@@ -146,42 +154,7 @@ const SearchLocation = () => {
                   </button>
                 </div>
 
-                <GoogleMap
-                  mapContainerStyle={containerStyle}
-                  center={
-                    bus.latest
-                      ? { lat: bus.latest.latitude, lng: bus.latest.longitude }
-                      : defaultCenter
-                  }
-                  zoom={15}
-                >
-                  {bus.latest && googleInstance && (
-                    <Marker
-                      position={{
-                        lat: bus.latest.latitude,
-                        lng: bus.latest.longitude,
-                      }}
-                      icon={{
-                        url: 'http://maps.google.com/mapfiles/ms/icons/bus.png',
-                        scaledSize: new googleInstance.maps.Size(40, 40),
-                      }}
-                    />
-                  )}
-
-                  {bus.path.length > 1 && (
-                    <Polyline
-                      path={bus.path.map((point) => ({
-                        lat: point.latitude,
-                        lng: point.longitude,
-                      }))}
-                      options={{
-                        strokeColor: colors[index % colors.length],
-                        strokeOpacity: 0.8,
-                        strokeWeight: 4,
-                      }}
-                    />
-                  )}
-                </GoogleMap>
+                {renderMap(bus, index)}
 
                 <div className="bg-white p-4 border-t">
                   <h2 className="text-lg font-semibold mb-2">Bus Details</h2>
