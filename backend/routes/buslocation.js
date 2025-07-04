@@ -9,6 +9,7 @@ router.get('/buslocation', async (req, res) => {
     const allLocations = await BusLocation.find().sort({ timestamp: -1 });
 
     const busMap = {};
+    
 
     for (const loc of allLocations) {
       const busId = loc.busId;
