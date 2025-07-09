@@ -29,11 +29,25 @@ const mapOptions = {
   zoomControl: true,
 };
 
+const getLocationName = async (lat, lng, google) => {
+  return new Promise((resolve) => {
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+      if (status === 'OK' && results[0]) {
+        resolve(results[0].formatted_address);
+      } else {
+        resolve('Unknown Location');
+      }
+    });
+  });
+};
+
 const SearchLocation = () => {
   const [buses, setBuses] = useState([]);
   const [selectedBusId, setSelectedBusId] = useState(null);
   const [googleInstance, setGoogleInstance] = useState(null);
   const [error, setError] = useState(null);
+  const [currentLocationName, setCurrentLocationName] = useState('');
 
   const routeCache = useRef({});
 
@@ -54,6 +68,13 @@ const SearchLocation = () => {
   }, []);
 
   const selectedBus = buses.find((bus) => bus.busId === selectedBusId);
+
+  useEffect(() => {
+    if (selectedBus && googleInstance && selectedBus.latest) {
+      getLocationName(selectedBus.latest.latitude, selectedBus.latest.longitude, googleInstance)
+        .then(setCurrentLocationName);
+    }
+  }, [selectedBus, googleInstance]);
 
   const renderMap = (bus, index, fullScreen = false) => {
     const path =
@@ -133,6 +154,11 @@ const SearchLocation = () => {
               anchor: new googleInstance.maps.Point(20, 40),
               labelOrigin: new googleInstance.maps.Point(20, 15),
             }}
+            label={{
+              text: bus.name || 'Bus',
+              color: 'black',
+              fontWeight: 'bold',
+            }}
             animation={googleInstance.maps.Animation.DROP}
           />
         )}
@@ -163,9 +189,13 @@ const SearchLocation = () => {
               <h2 className="text-xl font-semibold mb-4">Bus Details</h2>
               <ul className="space-y-2 text-gray-800">
                 <li><strong>Bus ID:</strong> {selectedBus.busId}</li>
-                <li><strong>Current Location:</strong> {selectedBus.latest ? `${selectedBus.latest.latitude.toFixed(4)}, ${selectedBus.latest.longitude.toFixed(4)}` : 'Not available'}</li>
+                <li><strong>Bus Name:</strong> {selectedBus.name}</li>
+                <li><strong>Driver:</strong> {selectedBus.driverName || 'N/A'}</li>
+                <li><strong>Route:</strong> {selectedBus.route || 'N/A'}</li>
                 <li><strong>Total Stops:</strong> {selectedBus.stops?.length || 0}</li>
-                <li><strong>Last Updated:</strong> {selectedBus.latest?.timestamp ? new Date(selectedBus.latest.timestamp).toLocaleString() : 'Not available'}</li>
+                <li><strong>Current Location:</strong> {selectedBus.latest
+                  ? `${selectedBus.latest.latitude.toFixed(4)}, ${selectedBus.latest.longitude.toFixed(4)} - ${currentLocationName}`
+                  : 'Not available'}</li>
               </ul>
             </div>
           </div>
@@ -186,9 +216,13 @@ const SearchLocation = () => {
                 <h2 className="text-lg font-semibold mb-2">Bus Details</h2>
                 <ul className="space-y-1 text-gray-800 text-sm">
                   <li><strong>Bus ID:</strong> {bus.busId}</li>
-                  <li><strong>Current Location:</strong> {bus.latest ? `${bus.latest.latitude.toFixed(4)}, ${bus.latest.longitude.toFixed(4)}` : 'Not available'}</li>
+                  <li><strong>Bus Name:</strong> {bus.name}</li>
+                  <li><strong>Driver:</strong> {bus.driverName || 'N/A'}</li>
+                  <li><strong>Route:</strong> {bus.route || 'N/A'}</li>
                   <li><strong>Total Stops:</strong> {bus.stops?.length || 0}</li>
-                  <li><strong>Last Updated:</strong> {bus.latest?.timestamp ? new Date(bus.latest.timestamp).toLocaleString() : 'Not available'}</li>
+                  <li><strong>Current Location:</strong> {bus.latest
+                    ? `${bus.latest.latitude.toFixed(4)}, ${bus.latest.longitude.toFixed(4)}`
+                    : 'Not available'}</li>
                 </ul>
               </div>
             </div>

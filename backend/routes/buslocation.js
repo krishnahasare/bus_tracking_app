@@ -1,43 +1,56 @@
+
 import express from 'express';
-import BusLocation from '../models/busLocation.js';
+import BusLocation from '../models/BusLocation.js';
+import Bus from '../models/Buses.js';
 
 const router = express.Router();
 
-// ✅ GET: Fetch latest + path for all buses
 router.get('/buslocation', async (req, res) => {
   try {
     const allLocations = await BusLocation.find().sort({ timestamp: -1 });
 
     const busMap = {};
-    
 
     for (const loc of allLocations) {
       const busId = loc.busId;
+
+      // Only fetch bus meta once per bus
       if (!busMap[busId]) {
-        busMap[busId] = {
-          busId,
-          latest: {
-            latitude: loc.latitude,
-            longitude: loc.longitude,
-          },
-          path: [],
-        };
-      }
+  const busMeta = await Bus.findOne({ busId });
+  console.log(`Found meta for ${busId}:`, busMeta); // ✅ log it
+
+  busMap[busId] = {
+    busId,
+    name: busMeta?.name || 'Not Found',
+    route: busMeta?.route || 'Not Found',
+    driverName: busMeta?.driverName || 'Not Found',
+    status: busMeta?.status || '',
+    stops: busMeta?.stops || [],
+    latest: {
+      latitude: loc.latitude,
+      longitude: loc.longitude,
+      timestamp: loc.timestamp,
+    },
+    path: [],
+  };
+}
+
 
       busMap[busId].path.push({
         latitude: loc.latitude,
         longitude: loc.longitude,
+        timestamp: loc.timestamp,
       });
     }
 
-    res.json(Object.values(busMap)); // ⬅️ All buses with latest + path
+    res.json(Object.values(busMap));
   } catch (error) {
     console.error('Error in GET /buslocation:', error);
     res.status(500).json({ message: 'Failed to fetch bus data' });
   }
 });
 
-// ✅ POST: Save new bus location
+
 router.post('/buslocation', async (req, res) => {
   try {
     const { latitude, longitude, busId } = req.body;
@@ -53,6 +66,27 @@ router.post('/buslocation', async (req, res) => {
   } catch (error) {
     console.error('Error saving location:', error);
     res.status(500).json({ message: 'Error saving location', error });
+  }
+});
+
+router.post('/addbus', async (req, res) => {
+  try {
+    const { busId, name, route, driverName, status, stops } = req.body;
+
+    const newBus = new Bus({
+      busId,
+      name,
+      route,
+      driverName,
+      status,
+      stops,
+    });
+
+    await newBus.save();
+    res.status(201).json({ message: 'Bus added successfully' });
+  } catch (err) {
+    console.error('Error adding bus:', err);
+    res.status(500).json({ message: 'Failed to add bus', error: err.message });
   }
 });
 
