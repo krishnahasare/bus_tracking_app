@@ -20,80 +20,84 @@ const AddBus = () => {
     stops: [],
   });
 
-  const [currentStopName, setCurrentStopName] = useState('');
-  const [message, setMessage] = useState('');
   const [routePath, setRoutePath] = useState([]);
+  const [stopName, setStopName] = useState('');
+  const [selectedStopIndex, setSelectedStopIndex] = useState(null);
+  const [message, setMessage] = useState('');
+
+  const handleMapClick = (e) => {
+    if (!stopName.trim()) {
+      alert('Enter stop name first!');
+      return;
+    }
+
+    const newStop = {
+      name: stopName,
+      latitude: e.latLng.lat(),
+      longitude: e.latLng.lng(),
+    };
+
+    const updatedStops = [...formData.stops, newStop];
+    setFormData({ ...formData, stops: updatedStops });
+    setRoutePath([...routePath, { lat: newStop.latitude, lng: newStop.longitude }]);
+    setStopName('');
+  };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleMapClick = (e) => {
-    if (!currentStopName.trim()) {
-      alert('Enter stop name before adding it on map!');
-      return;
-    }
+  const deleteStop = (index) => {
+    const updatedStops = formData.stops.filter((_, i) => i !== index);
+    const updatedPath = routePath.filter((_, i) => i !== index);
+    setFormData({ ...formData, stops: updatedStops });
+    setRoutePath(updatedPath);
+    setSelectedStopIndex(null);
+  };
 
-    const lat = e.latLng.lat();
-    const lng = e.latLng.lng();
-
-    const newStop = {
-      name: currentStopName,
-      latitude: lat,
-      longitude: lng,
-    };
-
-    setFormData({
-      ...formData,
-      stops: [...formData.stops, newStop],
-    });
-
-    setRoutePath([...routePath, { lat, lng }]);
-    setCurrentStopName('');
+  const editStopName = (index, newName) => {
+    const updatedStops = [...formData.stops];
+    updatedStops[index].name = newName;
+    setFormData({ ...formData, stops: updatedStops });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.stops.length === 0) {
-      alert('Please add at least one stop');
-      return;
-    }
-
+    if (!formData.stops.length) return alert('Add at least one stop.');
     try {
       await axios.post('https://bus-tracking-app-wt0f.onrender.com/addbus', formData);
-      setMessage('✅ Bus added successfully!');
+      setMessage('✅ Bus and route saved!');
       setFormData({ busId: '', name: '', route: '', driverName: '', status: 'active', stops: [] });
       setRoutePath([]);
-    } catch (error) {
-      console.error(error);
-      setMessage('❌ Failed to add bus. Make sure Bus ID is unique.');
+    } catch (err) {
+      console.error(err);
+      setMessage('❌ Failed to save bus. Try again.');
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg border">
-      <h2 className="text-2xl font-bold mb-4">Add New Bus with Map</h2>
+      <h2 className="text-2xl font-bold mb-4">Add New Bus with Interactive Map</h2>
 
+      {/* Form fields */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <input name="busId" placeholder="Bus ID" value={formData.busId} onChange={handleInputChange} className="w-full border p-2 rounded" required />
         <input name="name" placeholder="Bus Name" value={formData.name} onChange={handleInputChange} className="w-full border p-2 rounded" required />
-        <input name="route" placeholder="Route" value={formData.route} onChange={handleInputChange} className="w-full border p-2 rounded" />
+        <input name="route" placeholder="Route Description" value={formData.route} onChange={handleInputChange} className="w-full border p-2 rounded" />
         <input name="driverName" placeholder="Driver Name" value={formData.driverName} onChange={handleInputChange} className="w-full border p-2 rounded" />
         <select name="status" value={formData.status} onChange={handleInputChange} className="w-full border p-2 rounded">
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
 
-        {/* Stop Input with Map */}
-        <div className="bg-gray-50 p-4 rounded border">
-          <h3 className="font-semibold mb-2">Add Stops on Map</h3>
+        {/* Stop name input before clicking on map */}
+        <div className="bg-gray-100 p-4 rounded border">
           <input
-            placeholder="Enter Stop Name then click on map"
-            value={currentStopName}
-            onChange={(e) => setCurrentStopName(e.target.value)}
-            className="w-full mb-2 border p-2 rounded"
+            placeholder="Enter stop name, then click on map"
+            value={stopName}
+            onChange={(e) => setStopName(e.target.value)}
+            className="w-full mb-3 border p-2 rounded"
           />
-
           <LoadScript googleMapsApiKey="AIzaSyDjWXHa4cpYsQk01UBQUi6WtLtaZRRm1RI">
             <GoogleMap
               mapContainerStyle={containerStyle}
@@ -101,40 +105,61 @@ const AddBus = () => {
               zoom={13}
               onClick={handleMapClick}
             >
-              {formData.stops.map((stop, idx) => (
-                <Marker
-                  key={idx}
-                  position={{ lat: stop.latitude, lng: stop.longitude }}
-                  label={{ text: stop.name, color: 'black', fontWeight: 'bold' }}
-                />
-              ))}
-
+              {/* Draw route */}
               {routePath.length > 1 && (
                 <Polyline
                   path={routePath}
                   options={{
-                    strokeColor: '#4285F4',
-                    strokeOpacity: 1,
+                    strokeColor: '#00B0FF',
+                    strokeOpacity: 1.0,
                     strokeWeight: 4,
                     geodesic: true,
                   }}
                 />
               )}
+
+              {/* Show markers */}
+              {formData.stops.map((stop, index) => (
+                <Marker
+                  key={index}
+                  position={{ lat: stop.latitude, lng: stop.longitude }}
+                  label={{ text: stop.name, color: 'black' }}
+                  onClick={() => setSelectedStopIndex(index)}
+                />
+              ))}
             </GoogleMap>
           </LoadScript>
         </div>
 
-        {/* Show added stops */}
+        {/* Show/edit/delete stops list */}
         {formData.stops.length > 0 && (
-          <ul className="mt-4 list-disc pl-6 text-sm text-gray-700">
-            {formData.stops.map((s, i) => (
-              <li key={i}>{s.name} ({s.latitude.toFixed(4)}, {s.longitude.toFixed(4)})</li>
+          <ul className="mt-4 space-y-2 text-sm">
+            {formData.stops.map((stop, i) => (
+              <li key={i} className="flex justify-between items-center bg-gray-50 p-2 rounded border">
+                <div className="flex-1">
+                  <input
+                    className="border px-2 py-1 rounded w-full"
+                    value={stop.name}
+                    onChange={(e) => editStopName(i, e.target.value)}
+                  />
+                  <p className="text-gray-600 text-xs mt-1">
+                    ({stop.latitude.toFixed(4)}, {stop.longitude.toFixed(4)})
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => deleteStop(i)}
+                  className="ml-2 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </li>
             ))}
           </ul>
         )}
 
-        <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Submit Bus</button>
-        {message && <p className="mt-4 text-center text-sm font-medium">{message}</p>}
+        <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Save Bus & Route</button>
+        {message && <p className="mt-2 text-center text-sm">{message}</p>}
       </form>
     </div>
   );
