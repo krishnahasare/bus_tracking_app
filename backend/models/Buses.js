@@ -11,8 +11,9 @@ const BusSchema = new mongoose.Schema({
   name: { type: String, required: true },      // e.g. "Bus 101"
   route: { type: String },                     // e.g. "Route A"
   driverName: { type: String },                // optional
-  status: { type: String, default: 'active' }, // active/inactive/offline
-  stops: [StopSchema],                         // 👈 Add stop name + coordinates
+  status: { type: String, default: 'active' }, 
+  streamurl : { type: String },  
+  stops: [StopSchema], 
   createdAt: { type: Date, default: Date.now }
 });
 

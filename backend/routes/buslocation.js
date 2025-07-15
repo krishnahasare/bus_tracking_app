@@ -80,6 +80,7 @@ router.post('/addbus', async (req, res) => {
       driverName,
       status,
       stops,
+      streamurl: '', 
     });
 
     await newBus.save();
@@ -87,6 +88,15 @@ router.post('/addbus', async (req, res) => {
   } catch (err) {
     console.error('Error adding bus:', err);
     res.status(500).json({ message: 'Failed to add bus', error: err.message });
+  }
+});
+
+router.get('/allbusstreams', async (req, res) => {
+  try {
+    const buses = await Bus.find({}, 'busId name streamUrl');
+    res.json(buses);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch bus stream data' });
   }
 });
 

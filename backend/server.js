@@ -10,6 +10,7 @@ dotenv.config();
 import busLocationRoutes from './routes/buslocation.js';
 import NotificationRoutes from './routes/Notification.js';
 
+
 // Middleware
 app.use(cors()); // Enable CORS for all origins (adjust if needed)
 app.use(express.json()); // To parse JSON request bodies

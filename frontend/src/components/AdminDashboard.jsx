@@ -76,6 +76,18 @@ const AdminDashboard = () => {
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Alert Notifications</h3>
             <p className="text-gray-600 text-center">Monitor emergencies and overspeeding incidents.</p>
           </div>
+          {/* Live Streams Box */}
+<div
+  onClick={() => navigate('/live-streams')}
+  className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-lg transition-shadow cursor-pointer"
+>
+  <svg className="w-12 h-12 text-blue-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A2 2 0 0122 9.618v4.764a2 2 0 01-2.447 1.894L15 14M4 6h8M4 10h8M4 14h4" />
+  </svg>
+  <h3 className="text-lg font-semibold text-gray-900 mb-2">Live Streams</h3>
+  <p className="text-gray-600 text-center">Watch live bus camera footage</p>
+</div>
+
         </div>
       </main>
     </div>
