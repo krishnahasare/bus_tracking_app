@@ -8,13 +8,15 @@ const StopSchema = new mongoose.Schema({
 
 const BusSchema = new mongoose.Schema({
   busId: { type: String, required: true, unique: true },
-  name: { type: String, required: true },      // e.g. "Bus 101"
-  route: { type: String },                     // e.g. "Route A"
-  driverName: { type: String },                // optional
-  status: { type: String, default: 'active' }, 
-  streamurl : { type: String },  
-  stops: [StopSchema], 
+  name: { type: String, required: true },
+  route: { type: String },
+  driverName: { type: String },
+  status: { type: String, default: 'active' },
+  streamurl: { type: String },
+  stops: [StopSchema],
   createdAt: { type: Date, default: Date.now }
 });
 
-export default mongoose.model('Bus', BusSchema);
+// ✅ Prevent OverwriteModelError
+const Bus = mongoose.models.Bus || mongoose.model('Bus', BusSchema);
+export default Bus;

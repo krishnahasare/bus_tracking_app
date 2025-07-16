@@ -1,4 +1,3 @@
-// models/Attendance.js
 import mongoose from 'mongoose';
 
 const attendanceSchema = new mongoose.Schema({
@@ -7,4 +6,6 @@ const attendanceSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now },
 });
 
-export default mongoose.model('Attendance', attendanceSchema);
+// ✅ Prevent OverwriteModelError on re-import
+const Attendance = mongoose.models.Attendance || mongoose.model('Attendance', attendanceSchema);
+export default Attendance;

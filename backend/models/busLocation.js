@@ -4,7 +4,7 @@ const busLocationSchema = new mongoose.Schema({
   busId: {
     type: String,
     required: true,
-    index: true 
+    index: true
   },
   latitude: {
     type: Number,
@@ -20,5 +20,6 @@ const busLocationSchema = new mongoose.Schema({
   }
 });
 
-const BusLocation = mongoose.model('BusLocation', busLocationSchema);
+// ✅ Prevent OverwriteModelError
+const BusLocation = mongoose.models.BusLocation || mongoose.model('BusLocation', busLocationSchema);
 export default BusLocation;
