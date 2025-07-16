@@ -2,78 +2,78 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const AnalyticsDashboard = () => {
-  const [attendanceData, setAttendanceData] = useState([]);
-  const [distanceData, setDistanceData] = useState([]);
+  const [attendanceSummary, setAttendanceSummary] = useState([]);
+  const [distanceSummary, setDistanceSummary] = useState([]);
   const [loading, setLoading] = useState(true);
-  const busId = 'bus_201'; // You can make this dynamic if needed
+  const BUS_ID = 'bus_201'; // Later make this dynamic
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAnalytics = async () => {
       try {
         const [attendanceRes, distanceRes] = await Promise.all([
           axios.get('https://bus-tracking-app-wt0f.onrender.com/analytics/attendance/weekly-summary'),
-          axios.get(`https://bus-tracking-app-wt0f.onrender.com/analytics/distance/weekly-summary/${busId}`)
+          axios.get(`https://bus-tracking-app-wt0f.onrender.com/analytics/distance/weekly-summary/${BUS_ID}`)
         ]);
 
-        if (Array.isArray(attendanceRes.data)) {
-          setAttendanceData(attendanceRes.data);
-        } else {
-          console.warn('Attendance data not in array format:', attendanceRes.data);
-          setAttendanceData([]);
-        }
-
-        if (Array.isArray(distanceRes.data)) {
-          setDistanceData(distanceRes.data);
-        } else {
-          console.warn('Distance data not in array format:', distanceRes.data);
-          setDistanceData([]);
-        }
-
-        setLoading(false);
+        setAttendanceSummary(Array.isArray(attendanceRes.data) ? attendanceRes.data : []);
+        setDistanceSummary(Array.isArray(distanceRes.data) ? distanceRes.data : []);
       } catch (err) {
-        console.error('Error fetching analytics:', err);
+        console.error('❌ Error fetching analytics:', err);
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchAnalytics();
   }, []);
 
   return (
-    <div className="max-w-5xl mx-auto p-6 mt-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold mb-6 text-center">📊 Weekly Analytics Dashboard</h2>
+    <div className="max-w-6xl mx-auto p-6 mt-10">
+      <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
+        📊 Weekly Analytics Dashboard
+      </h1>
 
-      {loading && <p className="text-center text-gray-500">Loading data...</p>}
+      {loading ? (
+        <p className="text-center text-gray-500">Fetching analytics data...</p>
+      ) : (
+        <div className="space-y-10">
 
-      {!loading && (
-        <>
-          {/* Attendance Summary */}
-          <div className="mb-8">
-            <h3 className="text-xl font-semibold mb-4">🧍 Student Attendance (Last 7 Days)</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {attendanceData.map((day, i) => (
-                <div key={i} className="p-4 bg-gray-100 rounded-lg shadow-sm border">
-                  <h4 className="font-semibold">{day.date}</h4>
-                  <p>✅ Check-ins: {day.checkIn}</p>
-                  <p>🚪 Check-outs: {day.checkOut}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Attendance Section */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4 text-blue-700">🧍 Attendance Summary (7 Days)</h2>
+            {attendanceSummary.length === 0 ? (
+              <p className="text-gray-500">No attendance data available.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {attendanceSummary.map((day, i) => (
+                  <div key={i} className="bg-white rounded-xl shadow border p-4">
+                    <h4 className="font-semibold text-lg">{day.date}</h4>
+                    <p className="text-green-600">✅ Check-ins: {day.checkIn}</p>
+                    <p className="text-red-500">🚪 Check-outs: {day.checkOut}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
 
-          {/* Distance Summary */}
-          <div>
-            <h3 className="text-xl font-semibold mb-4">🚌 Distance Travelled by {busId}</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {distanceData.map((day, i) => (
-                <div key={i} className="p-4 bg-blue-50 rounded-lg shadow-sm border">
-                  <h4 className="font-semibold">{day.date}</h4>
-                  <p>📏 Distance: {day.distance} km</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
+          {/* Distance Section */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4 text-purple-700">🚌 Distance Travelled by {BUS_ID}</h2>
+            {distanceSummary.length === 0 ? (
+              <p className="text-gray-500">No distance data found for this bus.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {distanceSummary.map((item, i) => (
+                  <div key={i} className="bg-white rounded-xl shadow border p-4">
+                    <h4 className="font-semibold text-lg">{item.date}</h4>
+                    <p className="text-blue-600">📏 Distance: {item.distance} km</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+        </div>
       )}
     </div>
   );
