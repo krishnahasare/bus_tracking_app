@@ -44,6 +44,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
 
 // Start server
 const PORT = process.env.PORT || 5000;

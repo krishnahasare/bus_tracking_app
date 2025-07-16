@@ -17,6 +17,7 @@ const AddBus = () => {
     route: '',
     driverName: '',
     status: 'active',
+    cameraUrl: '', // 📸 NEW FIELD
     stops: [],
   });
 
@@ -67,7 +68,15 @@ const AddBus = () => {
     try {
       await axios.post('https://bus-tracking-app-wt0f.onrender.com/addbus', formData);
       setMessage('✅ Bus and route saved!');
-      setFormData({ busId: '', name: '', route: '', driverName: '', status: 'active', stops: [] });
+      setFormData({
+        busId: '',
+        name: '',
+        route: '',
+        driverName: '',
+        status: 'active',
+        cameraUrl: '',
+        stops: [],
+      });
       setRoutePath([]);
     } catch (err) {
       console.error(err);
@@ -79,18 +88,21 @@ const AddBus = () => {
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg border">
       <h2 className="text-2xl font-bold mb-4">Add New Bus with Interactive Map</h2>
 
-      {/* Form fields */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <input name="busId" placeholder="Bus ID" value={formData.busId} onChange={handleInputChange} className="w-full border p-2 rounded" required />
         <input name="name" placeholder="Bus Name" value={formData.name} onChange={handleInputChange} className="w-full border p-2 rounded" required />
         <input name="route" placeholder="Route Description" value={formData.route} onChange={handleInputChange} className="w-full border p-2 rounded" />
         <input name="driverName" placeholder="Driver Name" value={formData.driverName} onChange={handleInputChange} className="w-full border p-2 rounded" />
+        
+        {/* 📸 New Camera URL Field */}
+        <input name="cameraUrl" placeholder="Camera Stream URL (optional)" value={formData.cameraUrl} onChange={handleInputChange} className="w-full border p-2 rounded" />
+        
         <select name="status" value={formData.status} onChange={handleInputChange} className="w-full border p-2 rounded">
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
 
-        {/* Stop name input before clicking on map */}
+        {/* Stop name input */}
         <div className="bg-gray-100 p-4 rounded border">
           <input
             placeholder="Enter stop name, then click on map"
@@ -105,7 +117,7 @@ const AddBus = () => {
               zoom={13}
               onClick={handleMapClick}
             >
-              {/* Draw route */}
+              {/* Route line */}
               {routePath.length > 1 && (
                 <Polyline
                   path={routePath}
@@ -117,8 +129,7 @@ const AddBus = () => {
                   }}
                 />
               )}
-
-              {/* Show markers */}
+              {/* Markers */}
               {formData.stops.map((stop, index) => (
                 <Marker
                   key={index}
@@ -131,7 +142,7 @@ const AddBus = () => {
           </LoadScript>
         </div>
 
-        {/* Show/edit/delete stops list */}
+        {/* Stops list */}
         {formData.stops.length > 0 && (
           <ul className="mt-4 space-y-2 text-sm">
             {formData.stops.map((stop, i) => (

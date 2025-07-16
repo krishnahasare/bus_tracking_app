@@ -28,7 +28,7 @@ const LiveStreams = () => {
         buses.map((bus) => (
           <LiveStreamPlayer
             key={bus.busId}
-            name={bus.name}
+            busId={bus.busId}
             streamUrl={bus.streamUrl}
           />
         ))
