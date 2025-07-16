@@ -14,7 +14,7 @@ const sampleBuses = [
     route: 'Tarabai Park to DY Patil College',
     driverName: 'Ramesh Patil',
     status: 'active',
-    streamUrl: 'https://www.w3schools.com/html/mov_bbb.mp4'
+    streamUrl: 'https://media.w3.org/2010/05/sintel/trailer.mp4' // 1
   },
   {
     busId: 'bus_202',
@@ -22,7 +22,7 @@ const sampleBuses = [
     route: 'Rankala Lake to DY Patil College',
     driverName: 'Suresh Deshmukh',
     status: 'active',
-    streamUrl: 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4'
+    streamUrl: 'https://media.w3.org/2010/05/bunny/trailer.mp4' // 2
   },
   {
     busId: 'bus_203',
@@ -30,7 +30,7 @@ const sampleBuses = [
     route: 'Shivaji University to DY Patil College',
     driverName: 'Mahesh Jadhav',
     status: 'inactive',
-    streamUrl: 'https://www.w3schools.com/html/movie.mp4'
+    streamUrl: 'https://media.w3.org/2010/05/video/movie_300.mp4' // 3
   },
   {
     busId: 'bus_204',
@@ -38,7 +38,7 @@ const sampleBuses = [
     route: 'Kasaba Bawada to DY Patil College',
     driverName: 'Vikas Pawar',
     status: 'active',
-    streamUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4'
+    streamUrl: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4' // 4
   },
   {
     busId: 'bus_205',
@@ -46,9 +46,10 @@ const sampleBuses = [
     route: 'Shahupuri to DY Patil College',
     driverName: 'Arun Pawar',
     status: 'active',
-    streamUrl: 'https://media.w3.org/2010/05/bunny/trailer.mp4'
+    streamUrl: 'https://media.w3.org/2010/05/video/movie_700.mp4' // 5
   },
 ];
+
 
 const seedBuses = async () => {
   try {
