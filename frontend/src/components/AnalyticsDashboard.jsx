@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+
 const AnalyticsDashboard = () => {
   const [attendanceSummary, setAttendanceSummary] = useState([]);
   const [distanceSummary, setDistanceSummary] = useState([]);

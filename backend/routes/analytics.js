@@ -12,7 +12,7 @@ const router = express.Router();
 router.get('/attendance/weekly-summary', async (req, res) => {
   try {
     const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 6); // last 7 days
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 30); // last 30 days
 
     const summary = await Attendance.aggregate([
       { $match: { timestamp: { $gte: oneWeekAgo } } },
@@ -59,7 +59,7 @@ router.get('/distance/weekly-summary/:busId', async (req, res) => {
 
   try {
     const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 6); // last 7 days
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 30); // last 30 days
 
     const locations = await BusLocation.find({
       busId,
