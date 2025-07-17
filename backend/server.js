@@ -9,7 +9,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 import busLocationRoutes from './routes/buslocation.js';
 import NotificationRoutes from './routes/Notification.js';
-import AnalyticsRoutes from './routes/analytics.js'; // ✅ NEW
 
 
 // Middleware
@@ -32,7 +31,6 @@ mongoose.connect(MONGO_URL)
 // Routes
 app.use('/api/attendance', attendanceRoutes);
 app.use('/', busLocationRoutes);
-app.use('/api/analytics', AnalyticsRoutes); // 
 app.use('/api/alerts', NotificationRoutes);
 
 const __filename = fileURLToPath(import.meta.url);
