@@ -6,7 +6,6 @@ import SearchLocation from './components/SearchLocation';
 import AlertsPage from './components/AlertsPage';
 import AddBus from './components/AddBus';
 import LiveStream from './components/LiveStream'; 
-import AnalyticsDashboard from './components/AnalyticsDashboard'; 
 export default function App() {
   return (
     <Router>
@@ -19,7 +18,7 @@ export default function App() {
          <Route path="/addbus" element={<AddBus />} />
         <Route path="/emergencies-overspeeding" element={<div>Emergencies/Overspeeding Page (To be implemented)</div>} />
         <Route path="/live-streams" element={<LiveStream />} />
-        <Route path="/analytics" element={<AnalyticsDashboard />} />
+        <Route path="/analytics" element={<h1>Analytics Dashboard (To be implemented)</h1>} />
       </Routes>
     </Router>
   );

@@ -32,7 +32,7 @@ mongoose.connect(MONGO_URL)
 // Routes
 app.use('/api/attendance', attendanceRoutes);
 app.use('/', busLocationRoutes);
-app.use('/api/analytics', AnalyticsRoutes); // ✅ Added analytics route
+app.use('/api/analytics', AnalyticsRoutes); // 
 app.use('/api/alerts', NotificationRoutes);
 
 const __filename = fileURLToPath(import.meta.url);
