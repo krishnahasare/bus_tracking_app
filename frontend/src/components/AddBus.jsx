@@ -110,7 +110,7 @@ const AddBus = () => {
             onChange={(e) => setStopName(e.target.value)}
             className="w-full mb-3 border p-2 rounded"
           />
-          <LoadScript googleMapsApiKey="AIzaSyDjWXHa4cpYsQk01UBQUi6WtLtaZRRm1RI">
+          <LoadScript googleMapsApiKey="AIzaSyDfgM0PCpUAXFIGkOt4CmlcizPpyCcdoZA">
             <GoogleMap
               mapContainerStyle={containerStyle}
               center={center}

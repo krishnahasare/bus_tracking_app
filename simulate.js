@@ -1,11 +1,11 @@
 import axios from 'axios';
 import polyline from '@mapbox/polyline'; // You need to install this: `npm i @mapbox/polyline`
 
-const BUS_ID = 'bus_201';
+const BUS_ID = 'bus_202';
 const API_KEY = 'AIzaSyDfgM0PCpUAXFIGkOt4CmlcizPpyCcdoZA'; // 🔐 Replace with your real key
 
-const start = 'tarabail park , Kolhapur'; // Starting point
-const end = 'D Y Patil College, Kasaba Bawada, Kolhapur';
+const start = 'rajarampuri, Kolhapur, Maharashtra';
+const end = 'D Y Patil College of Engineering, Kolhapur, Maharashtra';
 
 async function getRoute() {
   const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(start)}&destination=${encodeURIComponent(end)}&key=${API_KEY}`;
