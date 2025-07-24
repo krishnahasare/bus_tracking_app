@@ -170,7 +170,7 @@ const SearchLocation = () => {
     <div className="p-6">
       <h1 className="text-3xl font-bold text-center mb-8">Live Bus Tracker</h1>
       <LoadScript
-        googleMapsApiKey="AIzaSyDKwMBQ-IgYpJrZbAMi1qG874_LWIeKD2o"
+        googleMapsApiKey="AIzaSyDfgM0PCpUAXFIGkOt4CmlcizPpyCcdoZA"
         onLoad={() => setGoogleInstance(window.google)}
       >
         {selectedBusId && selectedBus ? (
