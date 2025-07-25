@@ -1,12 +1,23 @@
+// File: frontend/src/pages/StudentLogs.jsx
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import {
+  Menu as MenuIcon,
+  Home as HomeIcon,
+  Search as SearchIcon,
+  Logout as LogoutIcon,
+  AccessTime as LogsIcon,
+  DirectionsBusFilled as BusIcon,
+  Warning as AlertIcon,
+  QrCodeScanner as RFIDIcon,
+} from '@mui/icons-material';
 
 const StudentLogs = () => {
   const [rfid, setRfid] = useState('');
   const [studentData, setStudentData] = useState(null);
   const [error, setError] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default to closed
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   const fetchStudentLogs = async () => {
@@ -15,16 +26,16 @@ const StudentLogs = () => {
       setStudentData(response.data);
       setError(null);
     } catch (err) {
-      setError('Failed to fetch student logs. Please try again.');
+      setError('❌ Failed to fetch student logs. Please try again.');
       setStudentData(null);
     }
   };
 
   const handleSearch = () => {
-    if (rfid) {
+    if (rfid.trim()) {
       fetchStudentLogs();
     } else {
-      setError('Please enter an RFID UID.');
+      setError('⚠️ Please enter an RFID UID.');
     }
   };
 
@@ -34,169 +45,106 @@ const StudentLogs = () => {
         rfidUid: rfid,
         status: 'Check In',
       });
-      alert('Attendance logged successfully!');
+      alert('✅ Attendance logged successfully!');
       fetchStudentLogs();
     } catch (err) {
-      setError('Failed to log attendance. Please try again.');
+      setError('❌ Failed to log attendance. Please try again.');
     }
   };
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
   return (
-    <div className="min-h-screen bg-gray-100 font-sans flex">
+    <div className="min-h-screen bg-gray-50 flex font-sans">
       {/* Sidebar */}
-      <div
-        className={`bg-blue-800 text-white w-64 space-y-6 py-7 px-2 fixed inset-y-0 left-0 transform ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } transition-transform duration-200 ease-in-out z-20`}
-      >
-        <nav className="mt-10">
-          <h2 className="text-lg font-semibold px-4 mb-4">Navigation</h2>
-          <button
-            onClick={() => navigate('/')}
-            className="w-full text-left px-4 py-2 hover:bg-blue-700 transition rounded-md flex items-center space-x-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            <span>Home</span>
-          </button>
-          <button
-            onClick={() => navigate('/attendance')}
-            className="w-full text-left px-4 py-2 hover:bg-blue-700 transition rounded-md flex items-center space-x-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            <span>Attendance Dashboard</span>
-          </button>
-          <button
-            onClick={() => navigate('/searchlocation')}
-            className="w-full text-left px-4 py-2 hover:bg-blue-700 transition rounded-md flex items-center space-x-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.243l-4.243-4.243m0 0l-4.243 4.243m4.243-4.243l4.243-4.243m-4.243 4.243l-4.243-4.243m0 0a6 6 0 1112 0 6 6 0 01-12 0z" />
-            </svg>
-            <span>Bus Location Search</span>
-          </button>
-          <button
-            onClick={() => navigate('/student-logs')}
-            className="w-full text-left px-4 py-2 hover:bg-blue-700 transition rounded-md flex items-center space-x-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <span>Student Logs</span>
-          </button>
-          <button
-            onClick={() => navigate('/emergencies-overspeeding')}
-            className="w-full text-left px-4 py-2 hover:bg-blue-700 transition rounded-md flex items-center space-x-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M12 4a8 8 0 100 16 8 8 0 000-16z" />
-            </svg>
-            <span>Emergencies/Overspeeding</span>
-          </button>
+      <aside className={`bg-blue-800 text-white w-64 p-6 space-y-4 fixed h-full transition-transform duration-200 z-20 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <h2 className="text-lg font-semibold mb-6">Navigation</h2>
+        <nav className="space-y-2">
+          <NavItem icon={<HomeIcon />} label="Home" onClick={() => navigate('/')} />
+          <NavItem icon={<LogsIcon />} label="Attendance Dashboard" onClick={() => navigate('/attendance')} />
+          <NavItem icon={<SearchIcon />} label="Bus Location Search" onClick={() => navigate('/searchlocation')} />
+          <NavItem icon={<RFIDIcon />} label="Student Logs" onClick={() => navigate('/student-logs')} />
+          <NavItem icon={<AlertIcon />} label="Emergencies/Overspeeding" onClick={() => navigate('/emergencies-overspeeding')} />
         </nav>
-      </div>
+      </aside>
 
+      {/* Main content */}
       <div className={`flex-1 transition-all duration-200 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}>
-        <header className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <button onClick={toggleSidebar} className="text-gray-600">
-                {isSidebarOpen ? (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                ) : (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                )}
-              </button>
-              <h1 className="text-2xl font-bold text-gray-900">School Name</h1>
-            </div>
-            <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-full hover:bg-gray-300 transition">
-              Logout
+        <header className="bg-white shadow-md py-4 px-6 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+              <MenuIcon className="text-gray-700" />
             </button>
+            <h1 className="text-2xl font-semibold text-gray-800">Student Attendance</h1>
           </div>
+          <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800">
+            <LogoutIcon fontSize="small" />
+            Logout
+          </button>
         </header>
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Student Attendance Logs</h2>
-            <div className="flex space-x-4 mb-4">
+        <main className="max-w-6xl mx-auto px-6 py-8">
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Search Student Logs</h2>
+
+            <div className="flex flex-wrap gap-4 mb-6">
               <input
                 type="text"
                 placeholder="Enter RFID UID"
                 value={rfid}
                 onChange={(e) => setRfid(e.target.value)}
-                className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1"
+                className="flex-1 min-w-[200px] border px-4 py-2 rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
               />
               <button
                 onClick={handleSearch}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
               >
                 Search
               </button>
               <button
                 onClick={handleLogAttendance}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
               >
                 Log Attendance
               </button>
               <button
                 onClick={() => navigate('/searchlocation')}
-                className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition"
+                className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
               >
                 Show Location
               </button>
             </div>
 
             {error && (
-              <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md mb-4">
-                <p>{error}</p>
+              <div className="bg-red-100 text-red-700 px-4 py-3 rounded mb-4 border border-red-300">
+                {error}
               </div>
             )}
 
             {studentData && (
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="text-lg font-medium text-gray-700 mb-2">
                   Student: {studentData.student?.name} (ID: {studentData.student?.studentId})
                 </h3>
-                {studentData.logs.length > 0 ? (
+                {studentData.logs?.length > 0 ? (
                   <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
+                    <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+                      <thead className="bg-gray-100">
                         <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Timestamp
-                          </th>
+                          <th className="text-left px-6 py-3 text-sm font-medium text-gray-600">Status</th>
+                          <th className="text-left px-6 py-3 text-sm font-medium text-gray-600">Timestamp</th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
+                      <tbody>
                         {studentData.logs.map((log) => (
-                          <tr key={log._id}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {log.status}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {new Date(log.timestamp).toLocaleString()}
-                            </td>
+                          <tr key={log._id} className="border-t">
+                            <td className="px-6 py-4 text-sm text-gray-800">{log.status}</td>
+                            <td className="px-6 py-4 text-sm text-gray-800">{new Date(log.timestamp).toLocaleString()}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
                 ) : (
-                  <p className="text-gray-600">No attendance logs found for this student.</p>
+                  <p className="text-gray-500">No attendance logs found.</p>
                 )}
               </div>
             )}
@@ -206,5 +154,16 @@ const StudentLogs = () => {
     </div>
   );
 };
+
+// Sidebar Nav Item
+const NavItem = ({ icon, label, onClick }) => (
+  <button
+    onClick={onClick}
+    className="flex items-center gap-3 w-full text-left px-4 py-2 hover:bg-blue-700 rounded transition"
+  >
+    {icon}
+    <span className="text-sm font-medium">{label}</span>
+  </button>
+);
 
 export default StudentLogs;

@@ -8,16 +8,8 @@ import {
   Circle,
 } from '@react-google-maps/api';
 
-const containerStyle = {
-  width: '100%',
-  height: '500px',
-};
-
-const defaultCenter = {
-  lat: 19.0760,
-  lng: 72.8777,
-};
-
+const containerStyle = { width: '100%', height: '500px' };
+const defaultCenter = { lat: 19.0760, lng: 72.8777 };
 const colors = ['#FF0000', '#0000FF', '#008000', '#FFA500', '#800080'];
 
 const mapOptions = {
@@ -77,8 +69,7 @@ const SearchLocation = () => {
   }, [selectedBus, googleInstance]);
 
   const renderMap = (bus, index, fullScreen = false) => {
-    const path =
-      routeCache.current[bus.busId] ||
+    const path = routeCache.current[bus.busId] ||
       (bus.path.length > 1 ? bus.path.map(p => ({ lat: p.latitude, lng: p.longitude })) : []);
 
     if (!routeCache.current[bus.busId] && path.length > 1) {
@@ -168,15 +159,15 @@ const SearchLocation = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold text-center mb-8">Live Bus Tracker</h1>
+      <h1 className="text-3xl font-bold text-center mb-10">🚍 Live Bus Tracking</h1>
       <LoadScript
         googleMapsApiKey="AIzaSyDfgM0PCpUAXFIGkOt4CmlcizPpyCcdoZA"
         onLoad={() => setGoogleInstance(window.google)}
       >
         {selectedBusId && selectedBus ? (
-          <div className="max-w-7xl mx-auto mb-8 rounded-xl shadow-xl overflow-hidden border">
-            <div className="p-4 bg-gray-100 text-lg font-semibold flex justify-between items-center">
-              Bus ID: {selectedBus.busId}
+          <div className="max-w-7xl mx-auto rounded-xl shadow-xl border bg-white overflow-hidden">
+            <div className="flex justify-between items-center px-6 py-4 bg-blue-50 border-b">
+              <h2 className="text-lg font-semibold text-blue-700">Viewing Bus: {selectedBus.busId}</h2>
               <button
                 onClick={() => setSelectedBusId(null)}
                 className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
@@ -185,25 +176,30 @@ const SearchLocation = () => {
               </button>
             </div>
             {renderMap(selectedBus, 0, true)}
-            <div className="bg-white p-6 border-t">
-              <h2 className="text-xl font-semibold mb-4">Bus Details</h2>
-              <ul className="space-y-2 text-gray-800">
-                <li><strong>Bus ID:</strong> {selectedBus.busId}</li>
-                <li><strong>Bus Name:</strong> {selectedBus.name}</li>
-                <li><strong>Driver:</strong> {selectedBus.driverName || 'N/A'}</li>
-                <li><strong>Route:</strong> {selectedBus.route || 'N/A'}</li>
-                <li><strong>Total Stops:</strong> {selectedBus.stops?.length || 0}</li>
-                <li><strong>Current Location:</strong> {selectedBus.latest
-                  ? `${selectedBus.latest.latitude.toFixed(4)}, ${selectedBus.latest.longitude.toFixed(4)} - ${currentLocationName}`
-                  : 'Not available'}</li>
+            <div className="p-6 border-t">
+              <h3 className="text-xl font-semibold mb-3">Details</h3>
+              <ul className="text-sm space-y-1">
+                <li><b>Bus Name:</b> {selectedBus.name}</li>
+                <li><b>Driver:</b> {selectedBus.driverName || 'N/A'}</li>
+                <li><b>Route:</b> {selectedBus.route || 'N/A'}</li>
+                <li><b>Stops:</b> {selectedBus.stops?.length || 0}</li>
+                <li><b>Location:</b> {selectedBus.latest
+                  ? `${selectedBus.latest.latitude.toFixed(4)}, ${selectedBus.latest.longitude.toFixed(4)} — ${currentLocationName}`
+                  : 'Unknown'}</li>
               </ul>
             </div>
           </div>
         ) : (
           [...buses].sort((a, b) => a.busId.localeCompare(b.busId)).map((bus, index) => (
-            <div key={bus.busId} className="max-w-5xl mx-auto mb-8 rounded-xl shadow-xl overflow-hidden border">
-              <div className="p-4 bg-gray-100 text-lg font-semibold flex justify-between items-center" style={{ borderLeft: `8px solid ${colors[index % colors.length]}` }}>
-                Bus ID: {bus.busId}
+            <div
+              key={bus.busId}
+              className="max-w-5xl mx-auto mb-8 rounded-xl shadow-lg overflow-hidden border bg-white"
+            >
+              <div
+                className="flex justify-between items-center p-4 bg-gray-100 text-lg font-semibold"
+                style={{ borderLeft: `6px solid ${colors[index % colors.length]}` }}
+              >
+                <span>Bus ID: {bus.busId}</span>
                 <button
                   onClick={() => setSelectedBusId(bus.busId)}
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -212,24 +208,27 @@ const SearchLocation = () => {
                 </button>
               </div>
               {renderMap(bus, index)}
-              <div className="bg-white p-4 border-t">
-                <h2 className="text-lg font-semibold mb-2">Bus Details</h2>
-                <ul className="space-y-1 text-gray-800 text-sm">
-                  <li><strong>Bus ID:</strong> {bus.busId}</li>
-                  <li><strong>Bus Name:</strong> {bus.name}</li>
-                  <li><strong>Driver:</strong> {bus.driverName || 'N/A'}</li>
-                  <li><strong>Route:</strong> {bus.route || 'N/A'}</li>
-                  <li><strong>Total Stops:</strong> {bus.stops?.length || 0}</li>
-                  <li><strong>Current Location:</strong> {bus.latest
+              <div className="p-4 border-t">
+                <ul className="text-sm text-gray-800 space-y-1">
+                  <li><b>Bus Name:</b> {bus.name}</li>
+                  <li><b>Driver:</b> {bus.driverName || 'N/A'}</li>
+                  <li><b>Route:</b> {bus.route || 'N/A'}</li>
+                  <li><b>Stops:</b> {bus.stops?.length || 0}</li>
+                  <li><b>Location:</b> {bus.latest
                     ? `${bus.latest.latitude.toFixed(4)}, ${bus.latest.longitude.toFixed(4)}`
-                    : 'Not available'}</li>
+                    : 'Unknown'}</li>
                 </ul>
               </div>
             </div>
           ))
         )}
       </LoadScript>
-      {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
+
+      {error && (
+        <div className="mt-6 text-center text-red-600 font-semibold">
+          ⚠️ {error}
+        </div>
+      )}
     </div>
   );
 };

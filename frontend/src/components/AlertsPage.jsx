@@ -17,80 +17,73 @@ const AlertsPage = () => {
 
   useEffect(() => {
     fetchAlerts();
-    const interval = setInterval(fetchAlerts, 5000); // Refresh every 5 seconds
+    const interval = setInterval(fetchAlerts, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  // Get border color based on type
   const getBorderColor = (type) => {
     switch (type) {
-      case 'Emergency':
-        return '#DC2626'; // red
-      case 'SpeedViolation':
-        return '#F59E0B'; // orange
-      case 'GeoFence':
-        return '#3B82F6'; // blue
-      case 'Delay':
-        return '#8B5CF6'; // purple
-      case 'Idle':
-        return '#10B981'; // green
-      default:
-        return '#9CA3AF'; // gray
+      case 'Emergency': return '#EF4444'; // Red
+      case 'SpeedViolation': return '#F97316'; // Orange
+      case 'GeoFence': return '#3B82F6'; // Blue
+      case 'Delay': return '#8B5CF6'; // Purple
+      case 'Idle': return '#10B981'; // Green
+      default: return '#D1D5DB'; // Gray
     }
   };
 
-  // Badge color based on severity
   const getSeverityBadge = (severity) => {
-    const colors = {
+    const map = {
       info: 'bg-blue-100 text-blue-800',
       warning: 'bg-yellow-100 text-yellow-800',
       danger: 'bg-red-100 text-red-800',
     };
-    return colors[severity] || 'bg-gray-100 text-gray-800';
+    return map[severity] || 'bg-gray-100 text-gray-800';
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">Alerts & Notifications</h2>
+    <div className="min-h-screen bg-gray-100 py-10 px-4 md:px-10 font-sans">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">Alerts & Notifications</h1>
+          <p className="text-gray-500 mt-1">Monitor all alerts triggered from buses in real-time.</p>
+        </div>
 
         {error && (
-          <div className="text-red-600 mb-4 bg-red-100 p-3 rounded">{error}</div>
+          <div className="bg-red-100 text-red-700 p-4 rounded-xl shadow mb-6">
+            {error}
+          </div>
         )}
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           {alerts.length === 0 ? (
-            <p className="text-gray-500">No alerts at the moment.</p>
+            <div className="text-gray-500">No alerts at the moment.</div>
           ) : (
             alerts.map((alert, index) => (
               <div
                 key={index}
-                className="bg-white border-l-4 shadow p-4 rounded-md flex flex-col gap-1"
-                style={{
-                  borderColor: getBorderColor(alert.type),
-                }}
+                className="bg-white rounded-2xl shadow-md border-l-[6px] p-5 transition hover:shadow-lg"
+                style={{ borderColor: getBorderColor(alert.type) }}
               >
-                <div className="flex justify-between items-start">
-                  <h3 className="font-semibold text-lg text-gray-900">
-                    {alert.type} Alert
-                  </h3>
-                  <span className={`text-sm px-2 py-1 rounded ${getSeverityBadge(alert.severity)}`}>
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-800">{alert.type} Alert</h2>
+                    <p className="text-gray-600 mt-1">{alert.message}</p>
+                  </div>
+                  <div className={`text-sm font-medium px-3 py-1 rounded-full ${getSeverityBadge(alert.severity)}`}>
                     {alert.severity?.toUpperCase()}
-                  </span>
+                  </div>
                 </div>
 
-                <p className="text-gray-700">{alert.message}</p>
-
-                <div className="text-sm text-gray-500">
-                  <strong>Bus ID:</strong> {alert.busId} &nbsp;|&nbsp;
-                  <strong>Time:</strong> {new Date(alert.timestamp).toLocaleString()}
+                <div className="text-sm text-gray-500 mt-2 space-y-1">
+                  <p><strong>Bus ID:</strong> {alert.busId}</p>
+                  <p><strong>Time:</strong> {new Date(alert.timestamp).toLocaleString()}</p>
+                  {alert.location?.latitude && (
+                    <p className="text-xs text-gray-400">
+                      Location: {alert.location.latitude.toFixed(4)}, {alert.location.longitude.toFixed(4)}
+                    </p>
+                  )}
                 </div>
-
-                {alert.location?.latitude && (
-                  <p className="text-xs text-gray-400">
-                    Location: {alert.location.latitude.toFixed(4)}, {alert.location.longitude.toFixed(4)}
-                  </p>
-                )}
               </div>
             ))
           )}
