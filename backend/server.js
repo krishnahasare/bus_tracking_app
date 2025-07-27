@@ -16,9 +16,20 @@ import Admin from './models/Admin.js';
 dotenv.config();
 const app = express();
 
-// ✅ Correct CORS setup to allow sessions/cookies
+// ✅ Updated CORS setup: allow both local + deployed frontend
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://bus-tracking-app-wt0f.onrender.com'
+];
+
 app.use(cors({
-  origin: 'http://localhost:5173', // React frontend port
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
@@ -49,7 +60,7 @@ app.use('/', busLocationRoutes);
 app.use('/api/alerts', NotificationRoutes);
 app.use('/api/admin', adminAuthRoutes);
 
-// ✅ Serve frontend
+// ✅ Serve frontend (React build)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const frontendPath = path.join(__dirname, '../backend/dist');
