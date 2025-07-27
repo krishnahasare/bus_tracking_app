@@ -16,18 +16,20 @@ const loginSchema = Joi.object({
   password: Joi.string().required()
 });
 
-// ✅ Signup route (only allowed if no admin exists)
+// ✅ 🔓 Signup route (allows multiple admins)
 router.post('/signup', async (req, res) => {
   const { error } = signupSchema.validate(req.body);
   if (error) return res.status(400).json({ error: error.details[0].message });
 
   try {
-    const existingAdmins = await Admin.countDocuments();
-    if (existingAdmins > 0) {
-      return res.status(403).json({ error: 'Signup not allowed. Admin already exists.' });
+    const { email, password } = req.body;
+
+    // Check if email already exists
+    const existing = await Admin.findOne({ email });
+    if (existing) {
+      return res.status(409).json({ error: 'Admin with this email already exists.' });
     }
 
-    const { email, password } = req.body;
     const admin = new Admin({ email });
     await Admin.register(admin, password);
     res.status(201).json({ message: 'Admin registered successfully' });
@@ -59,13 +61,11 @@ router.get('/logout', (req, res) => {
   });
 });
 
-// ✅ Unified route to check if logged in + whether signup is allowed
+// ✅ /me route: check if logged in and user info
 router.get('/me', async (req, res) => {
   try {
-    const adminCount = await Admin.countDocuments();
     res.status(200).json({
       authenticated: req.isAuthenticated(),
-      allowSignup: adminCount === 0,
       admin: req.user || null
     });
   } catch (err) {

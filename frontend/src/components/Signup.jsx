@@ -1,26 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { adminSignup } from "../api";
-import axios from "../api";
 
 const Signup = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
-  const [allowed, setAllowed] = useState(null); // null = loading
-
-  useEffect(() => {
-    const checkSignupAllowed = async () => {
-      try {
-        const res = await axios.get("/api/admin/me", { withCredentials: true });
-        if (!res.data.allowSignup) navigate("/login");
-        else setAllowed(true);
-      } catch (err) {
-        navigate("/login");
-      }
-    };
-    checkSignupAllowed();
-  }, [navigate]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -35,8 +20,6 @@ const Signup = () => {
       setError(err?.response?.data?.error || "Signup failed. Try a different email.");
     }
   };
-
-  if (allowed === null) return <p className="text-center mt-10">Checking permissions...</p>;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
