@@ -80,6 +80,7 @@ const AddBus = () => {
       setRoutePath([]);
     } catch (err) {
       console.error(err);
+      console.log('Error saving bus:', err);
       setMessage('❌ Failed to save bus. Try again.');
     }
   };

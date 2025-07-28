@@ -79,7 +79,7 @@ const Navbar = () => {
                 Login
               </Link>
 
-              {isSignupAllowed && (
+          
                 <Link
                   to="/signup"
                   className={`flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
@@ -91,7 +91,8 @@ const Navbar = () => {
                   <UserPlus size={20} />
                   Signup
                 </Link>
-              )}
+
+            
             </>
           )}
 
