@@ -62,16 +62,14 @@ router.get('/logout', (req, res) => {
 });
 
 // ✅ /me route: check if logged in and user info
-router.get('/me', async (req, res) => {
-  try {
-    res.status(200).json({
-      authenticated: req.isAuthenticated(),
-      admin: req.user || null
-    });
-  } catch (err) {
-    console.error('Error in /me:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
+// routes/admin.js (or wherever your route is)
+router.get('/me', (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.status(200).json({ email: req.user.email });
+  } else {
+    return res.status(401).json({ message: 'Not logged in' });
   }
 });
+
 
 export default router;

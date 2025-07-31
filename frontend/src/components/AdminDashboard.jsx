@@ -45,13 +45,7 @@ const AdminDashboard = () => {
           </div>
 
           <div className="p-4 border-t">
-            <button
-              onClick={() => navigate("/login")}
-              className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700"
-            >
-              <LogOut className="w-4 h-4" />
-              Logout
-            </button>
+           
           </div>
         </aside>
 
