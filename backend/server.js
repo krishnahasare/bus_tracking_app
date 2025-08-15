@@ -6,7 +6,7 @@ import passport from 'passport';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import analyticsRoutes from '../routes/analytics.js'
+import analyticsRoutes from './routes/analytics.js';
 
 
 
