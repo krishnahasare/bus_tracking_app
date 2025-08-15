@@ -6,6 +6,9 @@ import passport from 'passport';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import analyticsRoutes from '../routes/analytics.js'
+
+
 
 import attendanceRoutes from './routes/attendance.js';
 import busLocationRoutes from './routes/buslocation.js';
@@ -53,6 +56,12 @@ app.use('/api/attendance', attendanceRoutes);
 app.use('/', busLocationRoutes);
 app.use('/api/alerts', NotificationRoutes);
 app.use('/api/admin', adminAuthRoutes);
+
+function ensureAdmin(req, res, next) {
+  if (req.isAuthenticated() && req.user.role === 'admin') return next();
+  res.status(403).json({ error: 'Access denied' });
+}
+app.use('/api/analytics', ensureAdmin, analyticsRoutes);
 
 // ✅ Serve frontend (React build)
 const __filename = fileURLToPath(import.meta.url);

@@ -8,6 +8,7 @@ import AddBus from './components/AddBus';
 import LiveStream from './components/LiveStream'; 
 import Navbar from './components/navbar';
 import Footer from './components/Footer';
+import Dashboard from './components/Dashboard';
 
 // ✅ New components
 import Login from './components/Login';
@@ -28,7 +29,7 @@ export default function App() {
           <Route path="/student-logs" element={<StudentLogs />} />
           <Route path="/addbus" element={<AddBus />} />
           <Route path="/live-streams" element={<LiveStream />} />
-          <Route path="/analytics" element={<h1>Analytics Dashboard (To be implemented)</h1>} />
+          <Route path="/analytics" element={<Dashboard />} />
           <Route path="/emergencies-overspeeding" element={<div>Emergencies/Overspeeding Page (To be implemented)</div>} />
           <Route path="/api/alerts" element={<AlertsPage />} />
           <Route path="/login" element={<Login />} />
