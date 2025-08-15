@@ -5,10 +5,21 @@ export default function AnalyticsMap() {
   const [busLocations, setBusLocations] = useState([]);
 
   useEffect(() => {
-    fetch("/api/analytics/bus-locations")
-      .then(res => res.json())
-      .then(data => setBusLocations(data));
-  }, []);
+  const token = localStorage.getItem("token"); // or however you store it
+
+  fetch("http://localhost:5000/api/analytics/bus-locations", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch bus locations");
+      return res.json();
+    })
+    .then(data => setBusLocations(data))
+    .catch(err => console.error(err));
+}, []);
 
   const mapContainerStyle = { width: "100%", height: "500px" };
   const center = { lat: 16.854, lng: 74.564 };
