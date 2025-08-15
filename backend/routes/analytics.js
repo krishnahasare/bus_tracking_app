@@ -1,7 +1,7 @@
 import express from 'express';
 import Attendance from '../models/Attendance.js';
 import Notification from '../models/Notifcation.js';
-import BusLocation from '../models/BusLocation.js';
+import BusLocation from '../models/busLocation.js';
 
 const router = express.Router();
 
