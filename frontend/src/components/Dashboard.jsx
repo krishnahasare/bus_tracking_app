@@ -1,47 +1,75 @@
-// src/pages/Dashboard.jsx
-import KPICard from "../components/KpiCards";
-import LiveMap from "../components/Livemap";
-import AttendanceChart from "../components/AttendanceChart";
-import AlertsChart from "../components/AlertsChart";
-import AlertsTable from "../components/Alertstable";
+// src/components/Footer.jsx
+import { motion } from "framer-motion";
+import { Github, Linkedin, Twitter } from "lucide-react";
 
-export default function Dashboard() {
-  const buses = [{ lat: 17.57, lng: 74.2 }];
-  const attendanceData = [
-    { date: "Mon", present: 120 },
-    { date: "Tue", present: 130 },
-    { date: "Wed", present: 125 },
-  ];
-  const alertsData = [
-    { date: "Mon", alerts: 3 },
-    { date: "Tue", alerts: 5 },
-    { date: "Wed", alerts: 2 },
-  ];
-  const alerts = [
-    { time: "10:00 AM", type: "Geofence Violation", busId: "Bus-12" },
-    { time: "10:15 AM", type: "Delay", busId: "Bus-5" },
-  ];
-
+const Footer = () => {
   return (
-    <div className="p-6 space-y-6">
-      {/* KPI Section */}
-      <div className="grid grid-cols-3 gap-4">
-        <KPICard title="Total Buses Running" value="8" />
-        <KPICard title="Students Present Today" value="120" />
-        <KPICard title="Active Alerts" value="3" />
-      </div>
+    <footer className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white mt-12 shadow-2xl rounded-t-2xl">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+        className="max-w-7xl mx-auto px-6 py-10"
+      >
+        <div className="grid md:grid-cols-3 gap-8 text-center md:text-left">
+          {/* Brand */}
+          <div>
+            <h2 className="text-xl font-bold">Smart Bus Tracker</h2>
+            <p className="text-sm text-gray-200 mt-2">
+              Real-time school bus tracking with safety, reliability, and smart analytics.
+            </p>
+          </div>
 
-      {/* Live Map */}
-      <LiveMap buses={buses} />
+          {/* Quick Links */}
+          <div>
+            <h3 className="font-semibold text-lg mb-3">Quick Links</h3>
+            <ul className="space-y-2 text-gray-200">
+              <li className="hover:text-white transition">Dashboard</li>
+              <li className="hover:text-white transition">Analytics</li>
+              <li className="hover:text-white transition">Track Bus</li>
+              <li className="hover:text-white transition">Contact</li>
+            </ul>
+          </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-2 gap-4">
-        <AttendanceChart data={attendanceData} />
-        <AlertsChart data={alertsData} />
-      </div>
+          {/* Social Media */}
+          <div className="flex flex-col items-center md:items-end">
+            <h3 className="font-semibold text-lg mb-3">Connect With Us</h3>
+            <div className="flex space-x-4">
+              <motion.a
+                whileHover={{ scale: 1.2 }}
+                href="#"
+                className="p-2 rounded-full bg-white/20 hover:bg-white/30"
+              >
+                <Github size={20} />
+              </motion.a>
+              <motion.a
+                whileHover={{ scale: 1.2 }}
+                href="#"
+                className="p-2 rounded-full bg-white/20 hover:bg-white/30"
+              >
+                <Linkedin size={20} />
+              </motion.a>
+              <motion.a
+                whileHover={{ scale: 1.2 }}
+                href="#"
+                className="p-2 rounded-full bg-white/20 hover:bg-white/30"
+              >
+                <Twitter size={20} />
+              </motion.a>
+            </div>
+          </div>
+        </div>
 
-      {/* Alerts Table */}
-      <AlertsTable alerts={alerts} />
-    </div>
+        {/* Divider */}
+        <div className="border-t border-white/20 my-6"></div>
+
+        {/* Copyright */}
+        <div className="text-center text-sm text-gray-200">
+          © {new Date().getFullYear()} Smart Bus Tracker | All rights reserved.
+        </div>
+      </motion.div>
+    </footer>
   );
-}
+};
+
+export default Footer;
